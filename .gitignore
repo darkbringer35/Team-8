@@ -28,13 +28,13 @@ tmp/
 *.swp
 *~.nib
 local.properties
-.settings/
+#.settings/
 .loadpath
 .recommenders
-.project
+#.project
 .externalToolBuilders/
 *.launch
-.classpath
+#.classpath
 .factorypath
 .buildpath
 .target
