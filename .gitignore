@@ -1,15 +1,15 @@
-#컴파일 결과물 제외
+# 컴파일 결과물 제외
 *.com
 *.class
 *.dll
 *.exe
 *.o
 *.so
-
-#로그파일 제외
+ 
+# 로그파일 제외
 *.log
-
-#운영체제에서 만드는 시스템 파일들 제외
+ 
+# 운영체제에서 만드는 시스템 파일들 제외
 .DS_Store
 .DS_Store?
 ._*
@@ -17,8 +17,8 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-#이클립스에서 생성하는 프로젝트 정보 파일 제외
+ 
+# 이클립스에서 생성하는 프로젝트 정보 파일 제외
 .metadata
 bin/
 tmp/
@@ -37,4 +37,3 @@ local.properties
 .factorypath
 .buildpath
 .target
-/GithubSample/
