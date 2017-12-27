@@ -7,11 +7,10 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
-public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 상속받는다
+public class ChickenMain extends JFrame implements ActionListener, MouseListener {	// JFrame을 상속받는다
 	
 	private JPanel backgroundPanel[];  
 	private JPanel belowPanel[];
-	
 	private JButton[] btnMenu;
 	private JButton[] btnCash;
 	private JButton[]pad = new JButton[12];
@@ -22,7 +21,7 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 	private JLabel[] lblCash;
 	
 	private JTextField[] txfCash;
-
+	private ChickenDialog cDia;
 //=====================================================================================
 //	#생성자
 //=====================================================================================	
@@ -173,6 +172,7 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 	public void actionPerformed(ActionEvent e) {
 		EventAction obj = (EventAction) e.getSource();
 		
+		cDia=AppManager.getInstance().getChickenDialog();
 		obj.doAction();
 
 	}
@@ -182,7 +182,7 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 			this.setText(s);
 		}
 		public void doAction() {
-			System.out.println("안녕");
+			cDia.setMode(1);
 		}
 	}
 	
@@ -191,7 +191,7 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 			this.setText(s);
 		}
 		public void doAction() {
-			System.out.println("반가워");
+			cDia.setMode(2);
 		}
 	}
 	
@@ -200,7 +200,7 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 			this.setText(s);
 		}
 		public void doAction() {
-			System.out.println("레알");
+			cDia.setMode(3);
 		}
 	}
 	public class OptionBtn extends JButton implements EventAction{
@@ -208,43 +208,36 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 			this.setText(s);
 		}
 		public void doAction() {
-			System.out.println("ㅎㅎ");
+			cDia.setMode(4);
 		}
 	}
+	
 //=====================================================================================
 //#마우스이벤트 핸들링
 //=====================================================================================
-	public class DragAndDrop implements MouseListener{
-
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }
-

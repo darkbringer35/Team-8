@@ -13,13 +13,26 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		makeUI();
 	}
 	
+	public void setMode(int m) {
+		mode=m;
+		makeUI();
+	}
 	
 	public void makeUI() {
 		if(mode==1){
-			
+			ItemManagerUI();
+		}
+		else if(mode == 2) {
+			salesManagerUI();
+		}
+		else if(mode == 3) {
+			TableEditManagerUI();
+		}
+		else if(mode == 4) {
+			OptionUI();
 		}
 		else if(mode == 5) {	//테이블 주문서 UI
-			
+			TableUI();
 		}
 	}
 	public void ItemManagerUI(){
