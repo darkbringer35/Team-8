@@ -21,7 +21,6 @@ public class ChickenMain extends JFrame implements ActionListener, MouseListener
 	private JLabel[] lblCash;
 	
 	private JTextField[] txfCash;
-	private ChickenDialog cDia;
 //=====================================================================================
 //	#»ý¼ºÀÚ
 //=====================================================================================	
@@ -172,9 +171,7 @@ public class ChickenMain extends JFrame implements ActionListener, MouseListener
 	public void actionPerformed(ActionEvent e) {
 		EventAction obj = (EventAction) e.getSource();
 		
-		cDia=AppManager.getInstance().getChickenDialog();
 		obj.doAction();
-
 	}
 	
 	public class ItemManageBtn extends JButton implements EventAction{
@@ -182,7 +179,7 @@ public class ChickenMain extends JFrame implements ActionListener, MouseListener
 			this.setText(s);
 		}
 		public void doAction() {
-			cDia.setMode(1);
+			AppManager.getInstance().getChickenDialog().setMode(1);
 		}
 	}
 	
@@ -191,7 +188,7 @@ public class ChickenMain extends JFrame implements ActionListener, MouseListener
 			this.setText(s);
 		}
 		public void doAction() {
-			cDia.setMode(2);
+			AppManager.getInstance().getChickenDialog().setMode(2);
 		}
 	}
 	
@@ -200,7 +197,7 @@ public class ChickenMain extends JFrame implements ActionListener, MouseListener
 			this.setText(s);
 		}
 		public void doAction() {
-			cDia.setMode(3);
+			
 		}
 	}
 	public class OptionBtn extends JButton implements EventAction{
@@ -208,7 +205,7 @@ public class ChickenMain extends JFrame implements ActionListener, MouseListener
 			this.setText(s);
 		}
 		public void doAction() {
-			cDia.setMode(4);
+			AppManager.getInstance().getChickenDialog().setMode(3);
 		}
 	}
 	
