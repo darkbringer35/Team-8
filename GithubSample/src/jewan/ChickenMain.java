@@ -72,8 +72,8 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		//backgroundPanel[1].add(btnPlus);
 		//backgroundPanel[1].add(btnMinus);
 		
-		for(TableBtn i : table)
-			backgroundPanel[1].add(i);
+		/*for(TableBtn i : table)
+			backgroundPanel[1].add(i);*/
 		//-----------------------------------------------------------------------------
 		//	#패널3 설정
 		//-----------------------------------------------------------------------------
