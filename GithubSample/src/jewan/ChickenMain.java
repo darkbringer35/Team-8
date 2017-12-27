@@ -1,33 +1,15 @@
 package jewan;
 
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
+import javax.swing.*;
+import javax.swing.border.*;
 
 public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 상속받는다
 
-	private static ChickenMain chickenFrame;
+	private static ChickenMain chickenFrame = null;
 	private JPanel backgroundPanel[];  
 	private JPanel belowPanel[];
 	
@@ -37,7 +19,7 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 	private JButton[]pad = new JButton[12];
 	private JButton btnPlus = new JButton("+");
 	private JButton btnMinus = new JButton("-");
-	private TableBtn [] table;
+	private Vector<TableBtn> table;
 	
 	private JLabel[] lblCash;
 	
@@ -88,21 +70,9 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		backgroundPanel[1].setBorder(new TitledBorder(new LineBorder(Color.black)));
 		
 		int tableNum = 12;
-		table = new TableBtn[tableNum];
-		for(int i=0;i<tableNum;i++)
-		{
-			table[i]=new TableBtn();
-			table[i].setBounds(100,100,100,100);
-			table[i].setEnabled(false);
-			table[i].setVisible(false);
-			table[i].addActionListener(this);
-			backgroundPanel[1].add(table[i]);
-		}
 		//btnPlus.setBounds(755, 24, 30, );
 		//backgroundPanel[1].add(btnPlus);
 		//backgroundPanel[1].add(btnMinus);
-		table[0].setVisible(true);
-		table[0].setEnabled(true);
 		
 		//-----------------------------------------------------------------------------
 		//	#패널3 설정
@@ -213,10 +183,6 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 
 	}
 	
-	interface EventAction{
-		public void doAction();	//추상메서드 선언
-	}
-	
 	public class ItemManageBtn extends JButton implements EventAction{
 		public ItemManageBtn(String s){
 			this.setText(s);
@@ -251,49 +217,6 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 			System.out.println("ㅎㅎ");
 		}
 	}
-	public class TableBtn extends JButton implements EventAction{
-		
-		public void doAction() {
-			JDialog dialog = new JDialog(chickenFrame,"계산서");
-			JButton payBtn = new JButton("결제");
-			JButton okBtn = new JButton("등록");
-			JButton[] upBtn = new JButton[3];
-			JButton[] downBtn = new JButton[3];
-			JTextField[] amount = new JTextField[3];
-				
-			String[] menuList = {"-------------------------","후라이드치킨(15000)","양념치킨(15000)","간장치킨(15000)"};				
-			JComboBox[] menu = new JComboBox[3];
-		
-			for(int i=0;i<3;i++) {
-				menu[i] = new JComboBox(menuList);
-				menu[i].setBounds(0,i*50+30,125,25);
-					
-				downBtn[i] = new JButton("-");
-				downBtn[i].setBounds(125,i*50+30,40,25); 
-					
-				amount[i] = new JTextField();
-				amount[i].setBounds(165,i*50+30,50,25);
-					
-					
-				upBtn[i] = new JButton("+");
-				upBtn[i].setBounds(225,i*50+30,50,25);
-				
-					
-				dialog.add(menu[i]);
-				dialog.add(downBtn[i]);
-				dialog.add(upBtn[i]);
-				dialog.add(amount[i]);
-			}
-				
-			payBtn.setBounds(100,200,50,50);
-				
-			dialog.setLayout(new BorderLayout());	
-			dialog.setSize(300,300);
-			dialog.setLocation(300,300);
-			dialog.setVisible(true);
-		}
-	}
-	
 //=====================================================================================
 //#마우스이벤트 핸들링
 //=====================================================================================
