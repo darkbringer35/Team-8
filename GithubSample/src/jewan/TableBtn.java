@@ -4,15 +4,18 @@ import java.awt.BorderLayout;
 import javax.swing.*;
 
 public class TableBtn extends JButton implements EventAction, Runnable{
-	ChickenMain chickenFrame;
+	ChickenMain cMain;
 	ChickenDialog cDia;
+	TableBtn thisTable;
 	
 	public TableBtn(){
-		chickenFrame = ChickenMain.getInstance();
+		cMain = AppManager.getInstance().getChickenMain();
+		thisTable=this;
 	}
 	
 	public void doAction() {
-		JDialog dialog = new JDialog(chickenFrame,"계산서");
+		cDia=AppManager.getInstance().getChickenDialog();
+		JDialog dialog = new JDialog(cMain,"계산서");
 		JButton payBtn = new JButton("결제");
 		JButton okBtn = new JButton("등록");
 		JButton[] upBtn = new JButton[3];
@@ -31,12 +34,10 @@ public class TableBtn extends JButton implements EventAction, Runnable{
 				
 			amount[i] = new JTextField();
 			amount[i].setBounds(165,i*50+30,50,25);
-				
-				
+					
 			upBtn[i] = new JButton("+");
 			upBtn[i].setBounds(225,i*50+30,50,25);
-			
-				
+		
 			dialog.add(menu[i]);
 			dialog.add(downBtn[i]);
 			dialog.add(upBtn[i]);

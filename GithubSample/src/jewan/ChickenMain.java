@@ -8,13 +8,11 @@ import javax.swing.*;
 import javax.swing.border.*;
 
 public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 상속받는다
-
-	private static ChickenMain chickenFrame = null;
+	
 	private JPanel backgroundPanel[];  
 	private JPanel belowPanel[];
 	
 	private JButton[] btnMenu;
-	private JButton[] btnTable;
 	private JButton[] btnCash;
 	private JButton[]pad = new JButton[12];
 	private JButton btnPlus = new JButton("+");
@@ -28,8 +26,8 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 //=====================================================================================
 //	#생성자
 //=====================================================================================	
-	private ChickenMain() { // 프레임 선언
-		
+	public ChickenMain() { // 프레임 선언
+		AppManager.getInstance().setChickenMain(this);
 		this.setLayout(new BorderLayout()); // BorderLayout으로 레이아웃 설정
 		setSize(1050, 720); // 실행창 크기 설정
 		setLocation(300, 100); // 실행창 위치설정
@@ -74,6 +72,8 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		//backgroundPanel[1].add(btnPlus);
 		//backgroundPanel[1].add(btnMinus);
 		
+		for(TableBtn i : table)
+			backgroundPanel[1].add(i);
 		//-----------------------------------------------------------------------------
 		//	#패널3 설정
 		//-----------------------------------------------------------------------------
@@ -158,16 +158,10 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		pack();
 		setVisible(true);
 		setResizable(false);
-		chickenFrame=this;
 	}
 //=====================================================================================
 //	#get/set메서드
 //=====================================================================================	
-	public static ChickenMain getInstance()
-	{
-		if(chickenFrame == null) chickenFrame = new ChickenMain();
-		return chickenFrame;
-	}
 //=====================================================================================
 //	#함수
 //=====================================================================================	

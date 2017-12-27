@@ -7,7 +7,7 @@ public class ChickenDao {
 	
 	
 	public ChickenDao() {
-		
+		AppManager.getInstance().setChickenDao(this); 
 	}
 	
 	

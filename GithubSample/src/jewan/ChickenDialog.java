@@ -6,23 +6,19 @@ import javax.swing.*;
 
 public class ChickenDialog extends JDialog implements ActionListener{
 	private int mode;
-	private static ChickenDialog cDia=null;
 	
-	private ChickenDialog(int m) {
-		mode=m;
+	public ChickenDialog() {
+		AppManager.getInstance().setChickenDialog(this);
+		mode=0;
 		makeUI();
 	}
 	
-	public static ChickenDialog getInstance(int m) {
-		if(cDia == null) cDia = new ChickenDialog(m);
-		return cDia;
-	}
 	
 	public void makeUI() {
 		if(mode==1){
 			
 		}
-		else if(mode == 5) {
+		else if(mode == 5) {	//테이블 주문서 UI
 			
 		}
 	}
@@ -49,4 +45,5 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		
 		obj.doAction();
 	}
+	
 }
