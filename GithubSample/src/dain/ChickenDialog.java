@@ -1,4 +1,5 @@
-package jewan;
+package dain;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -8,7 +9,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	private int mode;
 	
 	public ChickenDialog() {
-		AppManager.getInstance().setChickenDialog(this);
+		//AppManager.getInstance().setChickenDialog(this);
 		mode=0;
 		makeUI();
 	}
