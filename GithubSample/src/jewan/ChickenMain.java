@@ -23,7 +23,7 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 	
 	private JTextField[] txfCash;
 	
-	protected int frameMode;
+	private int frameMode;
 //=====================================================================================
 //	#생성자
 //=====================================================================================	
