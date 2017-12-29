@@ -1,59 +1,68 @@
 package jewan;
 import java.awt.BorderLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.*;
 
-public class TableBtn extends JButton implements EventAction, Runnable{
+public class TableBtn extends JButton implements EventAction, Runnable, MouseListener{
 	ChickenMain cMain;
 	ChickenDialog cDia;
-	TableBtn thisTable;
+	private int x;
+	private int y;
 	
 	public TableBtn(){
 		cMain = AppManager.getInstance().getChickenMain();
-		thisTable=this;
+		this.setVisible(true);
+		this.setBounds(100,100,100,100);
+		x=100;
+		y=100;
+		this.addMouseListener(this);
+	}
+
+	public void doAction() {
+		AppManager.getInstance().getChickenDialog().setMode(4);
 	}
 	
-	public void doAction() {
-		cDia=AppManager.getInstance().getChickenDialog();
-		JDialog dialog = new JDialog(cMain,"계산서");
-		JButton payBtn = new JButton("결제");
-		JButton okBtn = new JButton("등록");
-		JButton[] upBtn = new JButton[3];
-		JButton[] downBtn = new JButton[3];
-		JTextField[] amount = new JTextField[3];
-			
-		String[] menuList = {"-------------------------","후라이드치킨(15000)","양념치킨(15000)","간장치킨(15000)"};				
-		JComboBox[] menu = new JComboBox[3];
 	
-		for(int i=0;i<3;i++) {
-			menu[i] = new JComboBox(menuList);
-			menu[i].setBounds(0,i*50+30,125,25);
-				
-			downBtn[i] = new JButton("-");
-			downBtn[i].setBounds(125,i*50+30,40,25); 
-				
-			amount[i] = new JTextField();
-			amount[i].setBounds(165,i*50+30,50,25);
-					
-			upBtn[i] = new JButton("+");
-			upBtn[i].setBounds(225,i*50+30,50,25);
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
 		
-			dialog.add(menu[i]);
-			dialog.add(downBtn[i]);
-			dialog.add(upBtn[i]);
-			dialog.add(amount[i]);
+	}
+
+//=====================================================================================
+//	#마우스 이벤트 핸들링
+//=====================================================================================	
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		if(cMain.frameMode==1) {
+			System.out.println("pick"+ e.getX()+e.getY());
+			
 		}
-			
-		payBtn.setBounds(100,200,50,50);
-			
-		dialog.setLayout(new BorderLayout());	
-		dialog.setSize(300,300);
-		dialog.setLocation(300,300);
-		dialog.setVisible(true);
 	}
 
 	@Override
-	public void run() {
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		this.setLocation(e.getX(), e.getY());
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
