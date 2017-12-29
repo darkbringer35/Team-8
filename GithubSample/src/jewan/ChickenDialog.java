@@ -92,7 +92,11 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		JTextField t1 = new JTextField(); //메뉴명 텍스트필드
 		JTextField t2 = new JTextField(); //재고 텍스트필드
 		JTextField t3 = new JTextField(); //가격 텍스트필드
-		p2.setLayout(new GridLayout(4,1)); //p2패널 그리드 레이아웃
+		p2.setLayout(null); //p2패널 그리드 레이아웃
+		cb.setBounds(120, 50, 230, 50);
+		t1.setBounds(120, 150, 230, 50);
+		t2.setBounds(120, 250, 230, 50);
+		t3.setBounds(120, 350, 230, 50);
 		p2.add(cb); //p2패널에 부착
 		p2.add(t1);
 		p2.add(t2);
@@ -115,7 +119,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		
 		//item Panel 레이아웃 설정 및 부속 패널들 붙이기
 		itemPanel.setLayout(new BorderLayout());
-		itemPanel.add(p1, BorderLayout.LINE_START); //p1패널 왼쪽
+		//itemPanel.add(p1, BorderLayout.LINE_START); //p1패널 왼쪽
 		itemPanel.add(p2, BorderLayout.CENTER); //p2패널 중간
 		itemPanel.add(p3, BorderLayout.PAGE_END); //p3패널 맨아래
 		itemPanel.add(scroll, BorderLayout.LINE_END); //scroll패널 오른쪽
