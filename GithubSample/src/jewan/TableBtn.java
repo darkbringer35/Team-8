@@ -1,3 +1,4 @@
+package jewan;
 
 import java.awt.BorderLayout;
 import java.awt.event.MouseEvent;
@@ -61,11 +62,9 @@ public class TableBtn extends JButton implements EventAction, Runnable, MouseLis
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 		if(AppManager.getInstance().getChickenMain().getFrameMode()==1)
-			AppManager.getInstance().getChickenMain().getTabelPanel().remove(this);
 			System.out.println("pick"+ e.getX()+e.getY());
 			this.setLocation(this.getX()+e.getX(),this.getY()+e.getY());
 			System.out.println(this.getX()+" "+this.getY());
-			AppManager.getInstance().getChickenMain().getTabelPanel().add(this);
 			AppManager.getInstance().getChickenMain().getTabelPanel().repaint();
 	}
 }
