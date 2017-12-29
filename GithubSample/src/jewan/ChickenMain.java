@@ -24,6 +24,8 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 	private JTextField[] txfCash;
 	
 	private int frameMode;
+	
+	private ImageIcon icon;
 //=====================================================================================
 //	#생성자
 //=====================================================================================	
@@ -42,6 +44,8 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		backgroundPanel = new JPanel[3];
 		for(int i=0; i<3;i++)
 			backgroundPanel[i] = new JPanel();
+		
+		icon = new ImageIcon("rc.png");
 		
 		//-----------------------------------------------------------------------------
 		//	#패널1 설정
@@ -83,6 +87,9 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 			btnTableEdit[i].addActionListener(this);
 		}
 		
+		
+		
+		
 		//-----------------------------------------------------------------------------
 		//	#패널3 설정
 		//-----------------------------------------------------------------------------
@@ -104,31 +111,22 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		belowPanel[0].setBackground(Color.white);
 		belowPanel[0].setLayout(null);
 		
-		lblCash = new JLabel[3];
+		int txtNum=3,  txtGap=48, txtH = 24;
+		
+		lblCash = new JLabel[txtNum];
 		lblCash[0] = new JLabel("결제 금액");
-		lblCash[0].setBounds(25,24,100,24);
-		belowPanel[0].add(lblCash[0]);
-		
 		lblCash[1] = new JLabel("받은 금액");
-		lblCash[1].setBounds(25,72,100,24);
-		belowPanel[0].add(lblCash[1]);
-		
 		lblCash[2] = new JLabel("잔       돈");
-		lblCash[2].setBounds(25,120,100,24);
-		belowPanel[0].add(lblCash[2]);
+		txfCash = new JTextField[txtNum];
 		
-		txfCash = new JTextField[3];
-		txfCash[0] = new JTextField();
-		txfCash[0].setBounds(125,24,175,24);
-		belowPanel[0].add(txfCash[0]);
-		
-		txfCash[1] = new JTextField();
-		txfCash[1].setBounds(125,72,175,24);
-		belowPanel[0].add(txfCash[1]);
-		
-		txfCash[2] = new JTextField();
-		txfCash[2].setBounds(125,120,175,24);
-		belowPanel[0].add(txfCash[2]);
+		for(int i =0;i<txtNum;i++) {
+			lblCash[i].setBounds(25,24+txtGap*i, 100,txtH);
+			txfCash[i] = new JTextField("0");
+			txfCash[i].setBounds(125,24+txtGap*i,175,txtH);
+			txfCash[i].setEditable(false);
+			belowPanel[0].add(lblCash[i]);
+			belowPanel[0].add(txfCash[i]);
+		}
 		
 		btnCash=new JButton[2];
 		btnCash[0] = new JButton("카드결제");
@@ -145,13 +143,14 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		belowPanel[1].setBounds(375,0,375,210);
 		belowPanel[1].setBackground(Color.white);
 		belowPanel[1].setLayout(new GridLayout(4,3));
-		pad= new JButton[12];
+		pad= new NumPadBtn[12];
 		for(int i=0; i<12; i++) {	//pad[i].setSize(125, 40);
-			if(i==9) { pad[i] = new JButton("00");}
-			else if(i==10) { pad[i] = new JButton("0");}
-			else if(i==11) { pad[i] = new JButton("C");}
-			else { pad[i] = new JButton(""+(i+1));}
+			if(i==9) { pad[i] = new NumPadBtn("00");}
+			else if(i==10) { pad[i] = new NumPadBtn("0");}
+			else if(i==11) { pad[i] = new NumPadBtn("C");}
+			else { pad[i] = new NumPadBtn(""+(i+1));}
 			belowPanel[1].add(pad[i]);
+			pad[i].addActionListener(this);
 		}
 		
 		//-----------------------------------------------------------------------------
@@ -180,6 +179,9 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 	}
 	public void setFrameMode(int mode) {
 		frameMode=mode;
+	}
+	public JTextField[] getTxfCash() {
+		return txfCash;
 	}
 //=====================================================================================
 //	#함수
@@ -250,18 +252,15 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		@Override
 		public void doAction() {
 			
-			if(frameMode==1)
+			if(table.size() < tableMax)
 			{
-				if(table.size() < tableMax)
-				{
-					TableBtn t = new TableBtn(table.size());
-					t.addActionListener(AppManager.getInstance().getChickenMain());
-					t.setEnabled(false);
-					table.add(t);
-					backgroundPanel[1].add(t);
-					t.setVisible(true);
-					backgroundPanel[1].repaint();
-				}
+				TableBtn t = new TableBtn(table.size());
+				t.addActionListener(AppManager.getInstance().getChickenMain());
+				t.setEnabled(false);
+				table.add(t);
+				backgroundPanel[1].add(t);
+				t.setVisible(true);
+				backgroundPanel[1].repaint();
 			}
 		}
 	}
@@ -272,9 +271,42 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 
 		@Override
 		public void doAction() {
-			// TODO Auto-generated method stub
 			
 		}
+	}
+	public class NumPadBtn extends JButton implements EventAction{
+		String title;
+		int x;
+		String cash;
+		JTextField[] txtCash;
+		
+		public NumPadBtn(String s) {
+			title = s;
+			this.setText(title);
+			txtCash=AppManager.getInstance().getChickenMain().getTxfCash();
+		}
+		@Override
+		public void doAction() {
+			cash=txtCash[1].getText();
+			x=Integer.parseInt(cash);
+			
+			if(title.equals("00")) {
+				x*=100;
+				txtCash[1].setText(""+x);	
+			}
+			else if(title.equals("C")) {
+				x=0;
+				txtCash[1].setText(""+x);
+			}
+			else {
+				x=x*10+Integer.parseInt(title);
+				txtCash[1].setText(""+x);
+			}
+			
+			x=Integer.parseInt(txtCash[0].getText())-x;
+			txtCash[2].setText(""+(-x));	
+		}
+		
 	}
 	
 }

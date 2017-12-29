@@ -1,7 +1,9 @@
 package jewan;
 
+
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 import javax.swing.*;
 
 
@@ -10,26 +12,48 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	private int mode;
 	
 	//화면 구성 전환을 위한 카드 레이아웃
-	protected Container tab;
-	protected CardLayout cardLayout;
+	private Container tab;
+	private Container menuTab;
+	private CardLayout cardLayout;
 	
 	//메뉴버튼에 모두 붙여야되는 메뉴바패널과 버튼들
-	JPanel menuPanel = new JPanel(); // 메뉴바 패널로 생성
-	JButton itemBtn = new JButton("재고관리"); //재고관리 버튼
-	JButton salesBtn = new JButton("매출관리"); //매출관리 버튼
-	JButton optionBtn = new JButton("환경설정"); //환경설정 버튼
+	private JPanel menuPanel; 	// 메뉴바 패널로 생성
+	private JButton itemBtn; 	//재고관리 버튼
+	private JButton salesBtn;	//매출관리 버튼
+	private JButton optionBtn; 	//환경설정 버튼
 	
 	//Dialog의 메뉴패널 밑에 붙일 각 메뉴 패널들 (카드레이아웃을 이용해 이 패널들 중 하나가 선택됨)
-	JPanel itemPanel = new JPanel(); //재고 관리 패널
-	JPanel salesPanel = new JPanel(); //매출 관리 패널
-	JPanel optionPanel = new JPanel(); //환경 설정 패널
+	private JPanel itemPanel;	 	//재고 관리 패널
+	private JPanel salesPanel;	 	//매출 관리 패널
+	private JPanel optionPanel;		//환경 설정 패널
+	/*테이블 UI*/JPanel tablePanel;
 	
+	//테이블UI용
+	private JPanel boxSpace;
+	private CardLayout cardLayout2;
+	private int selectedTid;
+	private ArrayList<BoxPanel> boxUI;
+	private JLabel lblTable;
 	
 	//생성자
 	public ChickenDialog() {
+		AppManager.getInstance().setChickenDialog(this);
+		
 		//Dialog 사이즈 설정
 		this.setSize(875,625);
 		this.setLocation(500,300);
+		
+		//Dialog의 메뉴패널 밑에 붙일 각 메뉴 패널들 (카드레이아웃을 이용해 이 패널들 중 하나가 선택됨)
+		itemPanel = new JPanel(); //재고 관리 패널
+		salesPanel = new JPanel(); //매출 관리 패널
+		optionPanel = new JPanel(); //환경 설정 패널
+		/*테이블 UI*/tablePanel = new JPanel();
+		
+		//메뉴버튼에 모두 붙여야되는 메뉴바패널과 버튼들
+		menuPanel = new JPanel(); 				//메뉴바 패널로 생성
+		itemBtn = new JButton("재고관리"); 		//재고관리 버튼
+		salesBtn = new JButton("매출관리"); 		//매출관리 버튼
+		optionBtn = new JButton("환경설정");	 	//환경설정 버튼
 		
 		//카드 레이아웃 세팅
 		tab = new JPanel();
@@ -45,9 +69,16 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		tab.add(itemPanel,"item");
 		tab.add(salesPanel,"sales");
 		tab.add(optionPanel,"option");
+		/*테이블 UI*/tab.add(tablePanel, "table");
 		
+		cardLayout2 = new CardLayout();
+		lblTable=new JLabel("테이블 주문서");
+		lblTable.setHorizontalAlignment(JLabel.CENTER);
+		menuTab = new JPanel();
+		menuTab.setLayout(cardLayout2);
+		menuTab.add(menuPanel,"menu");
+		menuTab.add(lblTable,"table");
 		
-		AppManager.getInstance().setChickenDialog(this);
 	}
 	
 	
@@ -56,6 +87,17 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	public void setMode(int m) {
 		mode=m;
 		makeUI();
+	}
+	
+	//테이블UI용
+	public void setTableIndex(int index) {
+		selectedTid=index;
+	}
+	public JPanel getTableUI(){
+		return boxSpace;
+	}
+	public void refreshTableUI(){
+		boxSpace.repaint();
 	}
 	
 	public void makeUI() {
@@ -126,10 +168,12 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		itemPanel.add(scroll, BorderLayout.LINE_END); //scroll패널 오른쪽
 	
 		//dialog 레이아웃 및 위젯 설정
-		this.add(menuPanel,BorderLayout.PAGE_START);
+		this.add(menuTab,BorderLayout.PAGE_START);
+		//this.add(menuPanel,BorderLayout.PAGE_START);
 		this.add(tab, BorderLayout.CENTER);
 		
 		//카드 레이아웃으로 재고관리 창 전환
+		this.cardLayout2.show(this.menuTab,"menu");
 		this.cardLayout.show(this.tab,"item");
 		
 		/*
@@ -193,10 +237,12 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		salesPanel.add(p2,BorderLayout.CENTER);
 		
 		//dialog 레이아웃 및 위젯 설정
-		this.add(menuPanel,BorderLayout.PAGE_START);
+		this.add(menuTab,BorderLayout.PAGE_START);
+		//this.add(menuPanel,BorderLayout.PAGE_START);
 		this.add(tab, BorderLayout.CENTER);
 		
 		//카드 레이아웃으로 매출관리창으로 전환하기
+		this.cardLayout2.show(this.menuTab,"menu");
 		this.cardLayout.show(this.tab,"sales");
 	}
 	
@@ -221,54 +267,54 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		optionPanel.add(btnOption);
 		
 		//dialog 레이아웃 및 위젯 설정
-		this.add(menuPanel,BorderLayout.PAGE_START);
+		this.add(menuTab,BorderLayout.PAGE_START);
+		//this.add(menuPanel,BorderLayout.PAGE_START);
 		this.add(tab, BorderLayout.CENTER);
 		
 		//카드 레이아웃으로 환경설정창으로 전환하기
+		this.cardLayout2.show(this.menuTab,"menu");
 		this.cardLayout.show(this.tab,"option");
 	}
 	
+	//테이블 UI
 	public void TableUI() {
-		JDialog dialog = new JDialog(this,"계산서1234");
+		
+		this.setTitle("테이블 주문서");
+		tablePanel.setLayout(new BorderLayout());
+		boxSpace = new JPanel();
+		boxSpace.setPreferredSize(new Dimension(this.getWidth()-40,300));
+		boxSpace.setBackground(Color.white);
+		boxSpace.setLayout(null);
+		JPanel btnSpace =new JPanel();
+		
+		boxUI= new ArrayList<BoxPanel>();
+		
+		boxUI.add(new BoxPanel(0));
+		
+		for(BoxPanel bp : boxUI)
+			boxSpace.add(bp);
+		
 		JButton payBtn = new JButton("결제");
 		JButton okBtn = new JButton("등록");
-		JButton[] upBtn = new JButton[3];
-		JButton[] downBtn = new JButton[3];
-		JTextField[] amount = new JTextField[3];
-		JScrollPane scroll = new JScrollPane(dialog,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
-		String[] menuList = {"-------------------------","후라이드치킨(15000)","양념치킨(15000)","간장치킨(15000)"};				
-		JComboBox[] menu = new JComboBox[3];
-
-		for(int i=0;i<3;i++) {
-			menu[i] = new JComboBox(menuList);
-			menu[i].setBounds(0,i*50+30,125,25);
-			
-			downBtn[i] = new JButton("-");
-			downBtn[i].setBounds(125,i*50+30,40,25); 
-			
-			amount[i] = new JTextField();
-			amount[i].setBounds(165,i*50+30,50,25);
-			
-			
-			upBtn[i] = new JButton("+");
-			upBtn[i].setBounds(225,i*50+30,50,25);
 		
-			
-			dialog.add(menu[i]);
-			dialog.add(downBtn[i]);
-			dialog.add(upBtn[i]);
-			dialog.add(amount[i]);
-		}
 		
-		payBtn.setBounds(100,200,50,50);
-		dialog.setLayout(new BorderLayout());
-		dialog.setSize(1000,500);
-		//dialog.setLocation(500,500);
-		dialog.setVisible(true);
-		//dialog.show();
-	}
-	public void UIoff() {
+		JScrollPane scroll = new JScrollPane(boxSpace,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		
+		btnSpace.add(payBtn);
+		btnSpace.add(okBtn);
+		
+		
+		tablePanel.add(scroll,BorderLayout.EAST);
+		tablePanel.add(btnSpace,BorderLayout.PAGE_END);
+		
+		this.add(menuTab,BorderLayout.PAGE_START);
+		this.add(tab, BorderLayout.CENTER);
+		
+		
+		this.cardLayout.show(this.tab,"table");
+		this.cardLayout2.show(this.menuTab,"table");
+		
 		
 	}
 	
@@ -278,5 +324,110 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		EventAction obj= (EventAction) e.getSource();
 		
 		obj.doAction();
+	}
+	
+	public class BoxPanel extends JPanel{
+		private int index;
+		private JComboBox menu; 
+		private AddBtn addBtn;
+		private MinusBtn minusBtn;
+		private JTextField amount;
+		private InsertBtn insertBtn;
+		private DeleteBtn deleteBtn;
+		
+		public BoxPanel(int index){
+			this.index=index;
+			
+			this.setBounds(70,10+index*30,500,25);
+			this.setLayout(null);
+			
+			menu= new JComboBox();
+			addBtn = new AddBtn("+");
+			minusBtn = new MinusBtn("-");
+			insertBtn = new InsertBtn("추가");
+			deleteBtn = new DeleteBtn("삭제");
+			amount = new JTextField(5);
+			
+			
+			menu.setBounds(0,0, 205,25);
+			minusBtn.setBounds(206,0,50,25);
+			amount.setBounds(257,0,50,25);
+			addBtn.setBounds(307,0,50,25);
+			insertBtn.setBounds(358,0,70,25);
+			deleteBtn.setBounds(429,0,70,25);
+			
+			addBtn.addActionListener(AppManager.getInstance().getChickenDialog());
+			minusBtn.addActionListener(AppManager.getInstance().getChickenDialog());
+			insertBtn.addActionListener(AppManager.getInstance().getChickenDialog());
+			deleteBtn.addActionListener(AppManager.getInstance().getChickenDialog());
+			
+			this.add(menu);
+			this.add(minusBtn);
+			this.add(amount);
+			this.add(addBtn);
+			this.add(insertBtn);
+			this.add(deleteBtn);
+		}
+		
+		public int getAmount(){
+			return Integer.parseInt(amount.getText());
+		}
+		public void setAmount(int amount) {
+			this.amount.setText(""+amount);
+		}
+		public int selectedBox(){
+			return menu.getSelectedIndex();
+		}
+		public void refreshBoxPanel() {
+			menu.repaint();
+		}
+	}
+	
+	public class AddBtn extends JButton implements EventAction{
+		public AddBtn(String s){
+			this.setText(s);
+		}
+		@Override
+		public void doAction() {
+			
+		}
+		
+	}
+	public class MinusBtn extends JButton implements EventAction{
+		public MinusBtn(String s){
+			this.setText(s);
+		}
+		@Override
+		public void doAction() {
+			
+		}
+		
+	}
+	public class InsertBtn extends JButton implements EventAction{
+		public InsertBtn(String s){
+			this.setText(s);
+		}
+		@Override
+		public void doAction() {
+			int index = boxUI.size();
+			BoxPanel bp = new BoxPanel(index);
+			AppManager.getInstance().getChickenDialog().getTableUI().add(bp);
+			AppManager.getInstance().getChickenDialog().refreshTableUI();
+			bp.refreshBoxPanel();
+			bp.repaint();
+			boxUI.add(bp);
+			
+		}
+		
+	}
+	public class DeleteBtn extends JButton implements EventAction{
+		public DeleteBtn(String s){
+			this.setText(s);
+		}
+		@Override
+		public void doAction() {
+			
+		}
+		
 	}
 }
