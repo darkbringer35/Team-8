@@ -17,7 +17,6 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 	private JButton[] pad;
 	private JButton[] btnTableEdit;
 	private Vector<TableBtn> table;
-	private int tableNum;
 	private final int tableMax=12;
 	
 	private JLabel[] lblCash;
@@ -82,7 +81,6 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 			btnTableEdit[i].setVisible(false);
 			btnTableEdit[i].addActionListener(this);
 		}
-		tableNum = 0;
 		
 		//-----------------------------------------------------------------------------
 		//	#패널3 설정
@@ -253,13 +251,16 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 			
 			if(frameMode==1)
 			{
-				TableBtn t=new TableBtn();
-				t.addActionListener(AppManager.getInstance().getChickenMain());
-				t.setEnabled(false);
-				table.add(t);
-				backgroundPanel[1].add(t);
-				t.setVisible(true);
-				backgroundPanel[1].repaint();
+				if(table.size() < tableMax)
+				{
+					TableBtn t = new TableBtn(table.size());
+					t.addActionListener(AppManager.getInstance().getChickenMain());
+					t.setEnabled(false);
+					table.add(t);
+					backgroundPanel[1].add(t);
+					t.setVisible(true);
+					backgroundPanel[1].repaint();
+				}
 			}
 		}
 	}

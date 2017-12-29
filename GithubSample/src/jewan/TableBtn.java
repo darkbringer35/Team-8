@@ -7,15 +7,15 @@ import java.awt.event.MouseListener;
 import javax.swing.*;
 
 public class TableBtn extends JButton implements EventAction, Runnable, MouseListener{
-	private int id;
+	private int index;
 
 //=====================================================================================
 //	#생성자
 //=====================================================================================	
-	public TableBtn(){
+	public TableBtn(int index){
 		this.setVisible(true);
 		this.setSize(100,100);
-		this.setLocation(100,100);
+		this.setLocation(100+index*10,100+index*10);
 		
 		this.addMouseListener(this);
 	}
@@ -23,11 +23,11 @@ public class TableBtn extends JButton implements EventAction, Runnable, MouseLis
 //=====================================================================================
 //	#get/set메서드
 //=====================================================================================	
-	public int getId() {
-		return id;
+	public int getIndex() {
+		return index;
 	}
-	public void setId(int id) {
-		this.id=id;
+	public void setIndex(int index) {
+		this.index=index;
 	}
 //=====================================================================================
 //	#함수
@@ -78,9 +78,7 @@ public class TableBtn extends JButton implements EventAction, Runnable, MouseLis
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 		if(AppManager.getInstance().getChickenMain().getFrameMode()==1)
-			System.out.println("pick"+ e.getX()+e.getY());
 			this.setLocation(this.getX()+e.getX(),this.getY()+e.getY());
-			System.out.println(this.getX()+" "+this.getY());
 			AppManager.getInstance().getChickenMain().getTabelPanel().repaint();
 	}
 }
