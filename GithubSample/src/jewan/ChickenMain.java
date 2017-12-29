@@ -36,6 +36,7 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame¿ª 
 		this.setBackground(Color.white);
 		
 		table = new Vector<TableBtn>();
+		AppManager.getInstance().setTableArray(table);
 		frameMode=0;
 		
 		backgroundPanel = new JPanel[3];
