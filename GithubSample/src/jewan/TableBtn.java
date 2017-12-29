@@ -1,4 +1,3 @@
-package jewan;
 
 import java.awt.BorderLayout;
 import java.awt.event.MouseEvent;
@@ -7,15 +6,14 @@ import java.awt.event.MouseListener;
 import javax.swing.*;
 
 public class TableBtn extends JButton implements EventAction, Runnable, MouseListener{
-	ChickenMain cMain;
-	ChickenDialog cDia;
 	private int x;
 	private int y;
 	
 	public TableBtn(){
-		cMain = AppManager.getInstance().getChickenMain();
 		this.setVisible(true);
-		this.setBounds(100,100,100,100);
+		this.setSize(100,100);
+		this.setLocation(100,100);
+		
 		x=100;
 		y=100;
 		this.addMouseListener(this);
@@ -38,10 +36,7 @@ public class TableBtn extends JButton implements EventAction, Runnable, MouseLis
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		if(cMain.frameMode==1) {
-			System.out.println("pick"+ e.getX()+e.getY());
-			
-		}
+		
 	}
 
 	@Override
@@ -65,7 +60,12 @@ public class TableBtn extends JButton implements EventAction, Runnable, MouseLis
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		if(cMain.frameMode==1)
-			this.setLocation(e.getX(), e.getY());
+		if(AppManager.getInstance().getChickenMain().getFrameMode()==1)
+			AppManager.getInstance().getChickenMain().getTabelPanel().remove(this);
+			System.out.println("pick"+ e.getX()+e.getY());
+			this.setLocation(this.getX()+e.getX(),this.getY()+e.getY());
+			System.out.println(this.getX()+" "+this.getY());
+			AppManager.getInstance().getChickenMain().getTabelPanel().add(this);
+			AppManager.getInstance().getChickenMain().getTabelPanel().repaint();
 	}
 }
