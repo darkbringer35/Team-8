@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+
 public class ChickenDialog extends JDialog implements ActionListener{
 	//버튼에 따른 UI를 불러오기 위한 mode변수
 	private int mode;
@@ -159,20 +160,36 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		JButton btn = new JButton("검색");
 		
 		//p1레이아웃
-		p1.setLayout(new BorderLayout());
-		p1.add(lb, BorderLayout.WEST);
-		p1.add(tf, BorderLayout.CENTER);
-		p1.add(btn, BorderLayout.EAST);
-
-		//매출 목록 패널 p2 생성
+		p1.setLayout(new FlowLayout());
+		p1.add(lb);
+		p1.add(tf);
+		p1.add(btn);
+		
+		//그래프와 매출리스트가 붙어있는 p2패널 생성
 		JPanel p2 = new JPanel();
-		JTextArea ta = new JTextArea(25,70); //ta영역 생성
+	
+		//매출 그래프가 표시될 gp패널 생성
+		JPanel gp = new JPanel();
+		/*
+		 * 그래프 붙일 자리
+		 * 
+		 */
+	
+		//매출 목록 list패널 생성
+		JPanel list = new JPanel();
+		JTextArea ta = new JTextArea(26,35); //ta영역 생성
 		JScrollPane scroll = new JScrollPane(ta,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		ta.append("날짜\t매출액\t\t판매량\n"); //ta에 나타낼 항목들
-		p2.add(scroll);
+		list.add(scroll);
+		
+		//p2레이아웃
+		p2.setLayout(new GridLayout(1,2)); //그리드 레이아웃 설정
+		p2.add(gp);
+		p2.add(list);
 		
 		//salesPanel에 부속 패널 붙이기
-		salesPanel.add(p1,BorderLayout.PAGE_END);
+		salesPanel.setLayout(new BorderLayout());
+		salesPanel.add(p1,BorderLayout.PAGE_START);
 		salesPanel.add(p2,BorderLayout.CENTER);
 		
 		//dialog 레이아웃 및 위젯 설정
@@ -249,7 +266,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		dialog.setSize(1000,500);
 		//dialog.setLocation(500,500);
 		dialog.setVisible(true);
-		dialog.show();
+		//dialog.show();
 	}
 	public void UIoff() {
 		
