@@ -245,6 +245,7 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame¿ª 
 				table.add(t);
 				backgroundPanel[1].add(t);
 				t.setVisible(true);
+				backgroundPanel[1].repaint();
 			}
 		}
 	}
