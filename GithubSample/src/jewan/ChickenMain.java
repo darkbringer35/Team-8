@@ -1,5 +1,6 @@
 package jewan;
 
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -240,6 +241,7 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame¿ª 
 			if(frameMode==1)
 			{
 				TableBtn t=new TableBtn();
+				t.addActionListener(AppManager.getInstance().getChickenMain());
 				table.add(t);
 				backgroundPanel[1].add(t);
 				t.setVisible(true);
