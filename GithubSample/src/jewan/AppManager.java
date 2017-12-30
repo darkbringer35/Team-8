@@ -1,10 +1,12 @@
 package jewan;
+import java.util.*;
 
 public class AppManager {
 	private static AppManager s_instance;
 	private ChickenMain cMain;
 	private ChickenDao cDao;
 	private ChickenDialog cDia;
+	private Vector<TableBtn> table;
 	
 	private AppManager() {
 		
@@ -31,5 +33,11 @@ public class AppManager {
 	}
 	public void setChickenDialog(ChickenDialog dia) {
 		cDia=dia;
+	}
+	public Vector<TableBtn> getTableArray(){
+		return table;
+	}
+	public void setTableArray(Vector<TableBtn> t) {
+		table = t;
 	}
 }

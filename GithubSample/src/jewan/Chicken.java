@@ -1,6 +1,7 @@
 package jewan;
 
 
+
 public class Chicken {
 	
 	int friedChicken;
