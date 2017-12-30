@@ -32,8 +32,9 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	private JPanel boxSpace;
 	private CardLayout cardLayout2;
 	private int selectedTid;
-	private ArrayList<BoxPanel> boxUI;
+	private ArrayList<BoxLabel> boxUI;
 	private JLabel lblTable;
+	
 	
 	//생성자
 	public ChickenDialog() {
@@ -79,6 +80,11 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		menuTab.add(menuPanel,"menu");
 		menuTab.add(lblTable,"table");
 		
+		ItemManagerUI();
+		salesManagerUI();
+		OptionUI();
+		TableUI();
+		
 	}
 	
 	
@@ -86,7 +92,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	
 	public void setMode(int m) {
 		mode=m;
-		makeUI();
+		refreshUI();
 	}
 	
 	//테이블UI용
@@ -96,22 +102,26 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	public JPanel getTableUI(){
 		return boxSpace;
 	}
-	public void refreshTableUI(){
-		boxSpace.repaint();
-	}
 	
-	public void makeUI() {
+	public void refreshUI() {
 		if(mode==1){ // 1: 재고관리UI
-			ItemManagerUI();
+			//카드 레이아웃으로 재고관리 창 전환
+			this.cardLayout2.show(this.menuTab,"menu");
+			this.cardLayout.show(this.tab,"item");
 		}
 		else if(mode == 2) { // 2: 매출관리UI
-			salesManagerUI();
+			//카드 레이아웃으로 매출관리창으로 전환하기
+			this.cardLayout2.show(this.menuTab,"menu");
+			this.cardLayout.show(this.tab,"sales");
 		}
 		else if(mode == 3) { // 3: 환결성정UI
-			OptionUI();
+			//카드 레이아웃으로 환경설정창으로 전환하기
+			this.cardLayout2.show(this.menuTab,"menu");
+			this.cardLayout.show(this.tab,"option");
 		}
 		else if(mode == 4) { // 4: 테이블 주문서 UI
-			TableUI();
+			this.cardLayout.show(this.tab,"table");
+			this.cardLayout2.show(this.menuTab,"table");
 		}
 		this.setVisible(true);
 	}
@@ -172,9 +182,8 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		//this.add(menuPanel,BorderLayout.PAGE_START);
 		this.add(tab, BorderLayout.CENTER);
 		
-		//카드 레이아웃으로 재고관리 창 전환
-		this.cardLayout2.show(this.menuTab,"menu");
-		this.cardLayout.show(this.tab,"item");
+		
+		
 		
 		/*
 		-----DB & Controller 파트 : 데이터를 변경하면 콤보박스 데이터 갱신
@@ -241,9 +250,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		//this.add(menuPanel,BorderLayout.PAGE_START);
 		this.add(tab, BorderLayout.CENTER);
 		
-		//카드 레이아웃으로 매출관리창으로 전환하기
-		this.cardLayout2.show(this.menuTab,"menu");
-		this.cardLayout.show(this.tab,"sales");
+		
 	}
 	
 	//환경 설정창 UI
@@ -271,9 +278,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		//this.add(menuPanel,BorderLayout.PAGE_START);
 		this.add(tab, BorderLayout.CENTER);
 		
-		//카드 레이아웃으로 환경설정창으로 전환하기
-		this.cardLayout2.show(this.menuTab,"menu");
-		this.cardLayout.show(this.tab,"option");
+		
 	}
 	
 	//테이블 UI
@@ -281,40 +286,52 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		
 		this.setTitle("테이블 주문서");
 		tablePanel.setLayout(new BorderLayout());
+		
 		boxSpace = new JPanel();
-		boxSpace.setPreferredSize(new Dimension(this.getWidth()-40,300));
 		boxSpace.setBackground(Color.white);
 		boxSpace.setLayout(null);
-		JPanel btnSpace =new JPanel();
 		
-		boxUI= new ArrayList<BoxPanel>();
+		boxUI= new ArrayList<BoxLabel>();
+		boxUI.add(new BoxLabel(0));
 		
-		boxUI.add(new BoxPanel(0));
-		
-		for(BoxPanel bp : boxUI)
+		for(BoxLabel bp : boxUI)
 			boxSpace.add(bp);
 		
-		JButton payBtn = new JButton("결제");
-		JButton okBtn = new JButton("등록");
+		ApplyBtn applyBtn;
+		InsertBtn insertBtn;
+		DeleteBtn deleteBtn;
 		
+		applyBtn = new ApplyBtn("확인");
+		insertBtn = new InsertBtn("추가");
+		deleteBtn = new DeleteBtn("삭제");
 		
+		JScrollPane boxSpaceScroll = new JScrollPane(boxSpace);
+		boxSpaceScroll.setBounds(0,0,400,300);
+		boxSpaceScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		boxSpaceScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
-		JScrollPane scroll = new JScrollPane(boxSpace,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		JPanel btnSpace =new JPanel();
+		btnSpace.setBounds(0,300,400,50);
 		
-		btnSpace.add(payBtn);
-		btnSpace.add(okBtn);
+		btnSpace.add(applyBtn);
+		btnSpace.add(insertBtn);
+		btnSpace.add(deleteBtn);
 		
+		insertBtn.addActionListener(AppManager.getInstance().getChickenDialog());
+		deleteBtn.addActionListener(AppManager.getInstance().getChickenDialog());
 		
-		tablePanel.add(scroll,BorderLayout.EAST);
+		tablePanel.add(boxSpaceScroll,BorderLayout.CENTER);
 		tablePanel.add(btnSpace,BorderLayout.PAGE_END);
 		
 		this.add(menuTab,BorderLayout.PAGE_START);
 		this.add(tab, BorderLayout.CENTER);
 		
 		
-		this.cardLayout.show(this.tab,"table");
-		this.cardLayout2.show(this.menuTab,"table");
 		
+		
+	}
+	
+	public void refreshItem() {
 		
 	}
 	
@@ -326,47 +343,42 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		obj.doAction();
 	}
 	
-	public class BoxPanel extends JPanel{
+	public class BoxLabel extends JLabel{
 		private int index;
 		private JComboBox menu; 
 		private AddBtn addBtn;
 		private MinusBtn minusBtn;
 		private JTextField amount;
-		private InsertBtn insertBtn;
-		private DeleteBtn deleteBtn;
-		
-		public BoxPanel(int index){
+		private JLabel lblIndex;
+			
+		public BoxLabel(int index){
 			this.index=index;
 			
-			this.setBounds(70,10+index*30,500,25);
+			if(index%2==0)
+				this.setBounds(5,1+(index/2)*30,375,25);
+			else
+				this.setBounds(400,1+(index/2)*30,375,25);
 			this.setLayout(null);
 			
 			menu= new JComboBox();
-			addBtn = new AddBtn("+");
-			minusBtn = new MinusBtn("-");
-			insertBtn = new InsertBtn("추가");
-			deleteBtn = new DeleteBtn("삭제");
+			addBtn = new AddBtn("+",index);
+			minusBtn = new MinusBtn("-",index);
 			amount = new JTextField(5);
-			
+			lblIndex = new JLabel(""+index);
 			
 			menu.setBounds(0,0, 205,25);
 			minusBtn.setBounds(206,0,50,25);
 			amount.setBounds(257,0,50,25);
 			addBtn.setBounds(307,0,50,25);
-			insertBtn.setBounds(358,0,70,25);
-			deleteBtn.setBounds(429,0,70,25);
 			
 			addBtn.addActionListener(AppManager.getInstance().getChickenDialog());
 			minusBtn.addActionListener(AppManager.getInstance().getChickenDialog());
-			insertBtn.addActionListener(AppManager.getInstance().getChickenDialog());
-			deleteBtn.addActionListener(AppManager.getInstance().getChickenDialog());
 			
 			this.add(menu);
 			this.add(minusBtn);
 			this.add(amount);
 			this.add(addBtn);
-			this.add(insertBtn);
-			this.add(deleteBtn);
+			
 		}
 		
 		public int getAmount(){
@@ -384,8 +396,23 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	}
 	
 	public class AddBtn extends JButton implements EventAction{
-		public AddBtn(String s){
+		private int index;
+		
+		public AddBtn(String s, int index){
 			this.setText(s);
+			this.index = index;
+		}
+		@Override
+		public void doAction() {
+		}
+		
+	}
+	public class MinusBtn extends JButton implements EventAction{
+		private int index;
+		
+		public MinusBtn(String s, int index){
+			this.setText(s);
+			this.index = index;
 		}
 		@Override
 		public void doAction() {
@@ -393,10 +420,11 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		}
 		
 	}
-	public class MinusBtn extends JButton implements EventAction{
-		public MinusBtn(String s){
+	public class ApplyBtn extends JButton implements EventAction{
+		public ApplyBtn(String s){
 			this.setText(s);
 		}
+
 		@Override
 		public void doAction() {
 			
@@ -410,13 +438,13 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		@Override
 		public void doAction() {
 			int index = boxUI.size();
-			BoxPanel bp = new BoxPanel(index);
-			AppManager.getInstance().getChickenDialog().getTableUI().add(bp);
-			AppManager.getInstance().getChickenDialog().refreshTableUI();
-			bp.refreshBoxPanel();
-			bp.repaint();
-			boxUI.add(bp);
-			
+			if(index<10)
+			{
+				BoxLabel bp = new BoxLabel(index);
+				boxUI.add(bp);
+				AppManager.getInstance().getChickenDialog().getTableUI().add(bp);
+				bp.updateUI();
+			}
 		}
 		
 	}
@@ -427,6 +455,13 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		@Override
 		public void doAction() {
 			
+			int index = boxUI.size()-1;
+			if(index>0) {
+				BoxLabel bp = boxUI.get(index);
+				AppManager.getInstance().getChickenDialog().getTableUI().remove(bp);
+				AppManager.getInstance().getChickenDialog().getTableUI().repaint();
+				boxUI.remove(bp);
+			}
 		}
 		
 	}
