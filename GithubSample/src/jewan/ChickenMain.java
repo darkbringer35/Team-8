@@ -175,16 +175,21 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 //=====================================================================================	
 	public void allTableClean() {
 		backgroundPanel[1].setBackground(Color.white);
-		for(TableBtn tb : AppManager.getInstance().getTableArray()){
+		for(TableBtn tb : table){
 			tb.setBorderPainted(false);
 			tb.setForeground(Color.black);
+		}
+		if(AppManager.getInstance().getTid()!=-1){
+			TableBtn tb = table.get(AppManager.getInstance().getTid());
+			tb.setBorderPainted(true);
+			tb.setForeground(Color.red);
 		}
 	}
 	
 	public void tableArrayRefresh() {
 		int index = 0;
 		AppManager.getInstance().setTid(-1);
-		for(TableBtn tb : AppManager.getInstance().getTableArray()){
+		for(TableBtn tb : table){
 			tb.setIndex(index);
 			tb.setText("테이블"+index);
 			index++;

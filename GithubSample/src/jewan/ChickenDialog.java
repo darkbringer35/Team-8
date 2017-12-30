@@ -15,9 +15,11 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	private Container tab;
 	private Container menuTab;
 	private CardLayout cardLayout;
+	private CardLayout cardLayout2;
 	
 	//메뉴버튼에 모두 붙여야되는 메뉴바패널과 버튼들
 	private JPanel menuPanel; 	// 메뉴바 패널로 생성
+	
 	private MenuBtn itemBtn; 	//재고관리 버튼
 	private MenuBtn salesBtn;	//매출관리 버튼
 	private MenuBtn optionBtn; 	//환경설정 버튼
@@ -30,12 +32,17 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	
 	//테이블UI용
 	private JPanel boxSpace;
-	private CardLayout cardLayout2;
 	private int selectedTid;
 	private ArrayList<BoxLabel> boxUI;
 	private JLabel lblTable;
 	private JTextField tfTotalPrice;
-	
+	private TableBtn selectedTable;
+	private ApplyBtn applyBtn;
+	private CashBtn cashBtn;
+	private InsertBtn insertBtn;
+	private DeleteBtn deleteBtn;
+
+	private JTextField txfOption;
 	
 	//생성자
 	public ChickenDialog() {
@@ -104,7 +111,13 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	}
 	
 	//테이블UI용
-	
+	public void refreshTable(int index) {
+		selectedTable=AppManager.getInstance().getTableArray().get(index);
+		if(selectedTable.getBoxNum()>0) {
+		}
+		else {
+		}
+	}
 	public JPanel getTableUI(){
 		return boxSpace;
 	}
@@ -128,6 +141,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			//카드 레이아웃으로 환경설정창으로 전환하기
 			setTitle("환경 설정");
 			this.setSize(875,625);
+			txfOption.setText(""+AppManager.getInstance().getTimerSet());
 			this.cardLayout2.show(this.menuTab,"menu");
 			this.cardLayout.show(this.tab,"option");
 		}
@@ -136,6 +150,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			this.setSize(500,500);
 			this.cardLayout.show(this.tab,"table");
 			this.cardLayout2.show(this.menuTab,"table");
+			refreshTable(AppManager.getInstance().getTid());
 		}
 		this.setVisible(true);
 	}
@@ -274,7 +289,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 
 		//라벨 텍스트필드 버튼 생성
 		JLabel lblOption = new JLabel("배달 제한 시간을 설정해주세요."); 
-		JTextField txfOption = new JTextField();
+		txfOption = new JTextField();
 		JButton btnOption = new JButton("확인");
 		
 		//위젯 설정
@@ -286,6 +301,17 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		optionPanel.add(lblOption);
 		optionPanel.add(txfOption);
 		optionPanel.add(btnOption);
+		
+		txfOption.setHorizontalAlignment(JTextField.RIGHT);
+		
+		btnOption.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				AppManager.getInstance().setTimerSet(Integer.parseInt(txfOption.getText()));
+				AppManager.getInstance().getChickenDialog().setVisible(false);
+			}
+			
+		});
 		
 		//dialog 레이아웃 및 위젯 설정
 		this.add(menuTab,BorderLayout.PAGE_START);
@@ -311,10 +337,10 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		for(BoxLabel bp : boxUI)
 			boxSpace.add(bp);
 		
-		ApplyBtn applyBtn = new ApplyBtn("확인");
-		CashBtn cashBtn = new CashBtn("결제");
-		InsertBtn insertBtn = new InsertBtn("추가");
-		DeleteBtn deleteBtn = new DeleteBtn("삭제");
+		applyBtn = new ApplyBtn("확인");
+		cashBtn = new CashBtn("결제");
+		insertBtn = new InsertBtn("추가");
+		deleteBtn = new DeleteBtn("삭제");
 		
 		
 		JScrollPane boxSpaceScroll = new JScrollPane(boxSpace);
@@ -330,6 +356,11 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		btnSpace.add(insertBtn);
 		btnSpace.add(deleteBtn);
 		
+		applyBtn.addActionListener(this);
+		cashBtn.addActionListener(this);
+		insertBtn.addActionListener(this);
+		deleteBtn.addActionListener(this);
+		
 		JLabel lblColumn = new JLabel("	인덱스                          품목명                                             갯수                          가격");
 		lblColumn.setBounds(2,1,450,25);
 		boxSpace.add(lblColumn);
@@ -339,10 +370,12 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		
 		JLabel lblPrice = new JLabel("총 가격");
 		
-		tfTotalPrice = new JTextField("10");
+		tfTotalPrice = new JTextField(6);
+		tfTotalPrice.setText("100");
+		tfTotalPrice.setHorizontalAlignment(JTextField.RIGHT);
 		tfTotalPrice.setEditable(false);
 		tfTotalPrice.setBackground(Color.WHITE);
-		tfTotalPrice.setText("                     ");
+		
 		
 		pricePanel.add(lblPrice);
 		
@@ -358,12 +391,6 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		this.add(menuTab,BorderLayout.PAGE_START);
 		this.add(tab, BorderLayout.CENTER);
 		
-	}
-	
-	public void refreshTable(int index) {
-		TableBtn table=AppManager.getInstance().getTableArray().get(index);
-		if(table.getBoxNum()!=0) {
-		}
 	}
 	
 	@Override
@@ -396,6 +423,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			amount.setHorizontalAlignment(JTextField.RIGHT);
 			amount.setText("1");
 			price = new JTextField(5);
+			price.setText("0");
 			price.setHorizontalAlignment(JTextField.RIGHT);
 			price.setEditable(false);
 			price.setBackground(Color.WHITE);
@@ -427,7 +455,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		public void setAmount(int amount) {
 			this.amount.setText(""+amount);
 		}
-		public int selectedBox(){
+		public int getSelectedBox(){
 			return menu.getSelectedIndex();
 		}
 		public void refreshBoxPanel() {
@@ -444,6 +472,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		}
 		@Override
 		public void doAction() {
+			
 		}
 		
 	}
@@ -467,7 +496,8 @@ public class ChickenDialog extends JDialog implements ActionListener{
 
 		@Override
 		public void doAction() {
-			
+			selectedTable.timerStart();
+			AppManager.getInstance().getChickenDialog().setVisible(false);
 		}
 		
 	}
@@ -478,7 +508,13 @@ public class ChickenDialog extends JDialog implements ActionListener{
 
 		@Override
 		public void doAction() {
-			
+			JTextField[] txf;
+			int x = Integer.parseInt(tfTotalPrice.getText());
+			txf=AppManager.getInstance().getChickenMain().getTxfCash();
+			txf[0].setText(""+x);
+			x=x-Integer.parseInt(txf[1].getText());
+			txf[2].setText(""+(-x));
+			AppManager.getInstance().getChickenDialog().setVisible(false);
 		}
 		
 	}

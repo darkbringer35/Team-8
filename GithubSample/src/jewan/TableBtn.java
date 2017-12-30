@@ -81,6 +81,7 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 	
 	public void timerStart() { 
 		if(timer==null) {
+			timeReset();
 			timer= new Timer();
 			timerOn=true;
 			timer.start();
@@ -101,7 +102,6 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 		AppManager.getInstance().getChickenMain().allTableClean();
 		this.setForeground(Color.RED);
 		this.setBorderPainted(true);
-		timerStart();
 	}
 
 //=====================================================================================
@@ -130,8 +130,7 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 	public void mousePressed(MouseEvent e) {
 		backX=this.getX();
 		backY=this.getY();
-		AppManager.getInstance().setTid(index);
-		
+	
 		if(AppManager.getInstance().getFrameMode() == 2) {
 			timerOff();
 			AppManager.getInstance().getChickenMain().getTabelPanel().remove(this);
@@ -146,7 +145,16 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		if(AppManager.getInstance().getFrameMode()==1) {
+		if(AppManager.getInstance().getFrameMode()==0) {
+			if(this.getX()<120&&this.getY()>409) {
+				System.out.println("¼º°ø");
+				JTextField[] txf=AppManager.getInstance().getChickenMain().getTxfCash();
+				txf[0].setText("1"+index);
+			}
+			this.setLocation(backX,backY);
+			AppManager.getInstance().getChickenMain().getTabelPanel().repaint();
+		}
+		else if(AppManager.getInstance().getFrameMode()==1) {
 			if(this.getX()<0||this.getX()>708||this.getY()<0||this.getY()>409)
 				AppManager.getInstance().setMouseOut(true);
 			else
@@ -165,7 +173,7 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 	
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if(AppManager.getInstance().getFrameMode()==1) {
+		if(AppManager.getInstance().getFrameMode()<2) {
 			this.setLocation(this.getX()+e.getX()-50,this.getY()+e.getY()-50);
 			AppManager.getInstance().getChickenMain().getTabelPanel().repaint();
 		}
