@@ -1,17 +1,20 @@
 package jewan;
 
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 
-public class TableBtn extends JButton implements EventAction, Runnable, MouseListener{
+public class TableBtn extends JButton implements EventAction, MouseListener, MouseMotionListener{
 	private int index;
 	private int boxAmount;
 	private ArrayList<Table> tInfo=null;
+	private int time=0;
+	private boolean timerOn = false;
+	private int backX;
+	private int backY;
 	
-	private Thread timer=null;
+	private Timer timer=null;
 	
 //=====================================================================================
 //	#생성자
@@ -20,7 +23,10 @@ public class TableBtn extends JButton implements EventAction, Runnable, MouseLis
 		this.index=index;
 		boxAmount=0;
 		
+		timeReset();
 		this.setText("테이블"+index);
+		
+		this.updateUI();
 		
 		this.setVisible(true);
 		this.setSize(100,100);
@@ -28,6 +34,7 @@ public class TableBtn extends JButton implements EventAction, Runnable, MouseLis
 		this.setBorderPainted(false);
 		
 		this.addMouseListener(this);
+		this.addMouseMotionListener(this);
 	}
 	
 //=====================================================================================
@@ -54,8 +61,37 @@ public class TableBtn extends JButton implements EventAction, Runnable, MouseLis
 //=====================================================================================
 //	#함수
 //=====================================================================================
+	public void paintComponent(Graphics page) {
+		String min, sec;
+		
+		super.paintComponent(page);
+		
+		min=""+time/60;
+		
+		if(time%60<10) sec="0"+time%60;
+		else sec=""+time%60;
+		if(timerOn) {
+			page.setColor(Color.black);
+			page.drawString(min+":"+sec, 10, 10);
+		}
+	}
+	public void timeReset() {
+		time=60*AppManager.getInstance().getTimerSet();
+	}
 	
-	
+	public void timerStart() { 
+		if(timer==null) {
+			timer= new Timer();
+			timerOn=true;
+			timer.start();
+		}
+	}
+	public void timerOff() {
+		timerOn=false;
+		if(timer!=null) timer.stop();
+		timer=null;
+		timeReset();
+	}
 //=====================================================================================
 //	#액션이벤트 핸들링
 //=====================================================================================
@@ -63,12 +99,9 @@ public class TableBtn extends JButton implements EventAction, Runnable, MouseLis
 		AppManager.getInstance().setTid(index);
 		AppManager.getInstance().getChickenDialog().setMode(4);
 		AppManager.getInstance().getChickenMain().allTableClean();
+		this.setForeground(Color.RED);
 		this.setBorderPainted(true);
-	}
-	
-	
-	@Override
-	public void run() {
+		timerStart();
 	}
 
 //=====================================================================================
@@ -76,30 +109,89 @@ public class TableBtn extends JButton implements EventAction, Runnable, MouseLis
 //=====================================================================================	
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		
+		if(AppManager.getInstance().getFrameMode() == 2) {
+			timerOff();
+			AppManager.getInstance().getChickenMain().getTabelPanel().remove(this);
+			AppManager.getInstance().getChickenMain().getTabelPanel().repaint();
+			AppManager.getInstance().getTableArray().remove(this);
+			AppManager.getInstance().getChickenMain().tableArrayRefresh();
+			AppManager.getInstance().getChickenMain().allTableClean();
+			AppManager.getInstance().setFrameMode(1);
+		}
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent e) {
-	}
+	public void mouseEntered(MouseEvent e) { }
 
 	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseExited(MouseEvent e) {}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+		backX=this.getX();
+		backY=this.getY();
+		AppManager.getInstance().setTid(index);
 		
+		if(AppManager.getInstance().getFrameMode() == 2) {
+			timerOff();
+			AppManager.getInstance().getChickenMain().getTabelPanel().remove(this);
+			AppManager.getInstance().getChickenMain().getTabelPanel().repaint();
+			AppManager.getInstance().getTableArray().remove(this);
+			AppManager.getInstance().getChickenMain().tableArrayRefresh();
+			AppManager.getInstance().getChickenMain().allTableClean();
+			AppManager.getInstance().setFrameMode(1);
+		}
 		
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if(AppManager.getInstance().getFrameMode()==1) {
+			if(this.getX()<0||this.getX()>708||this.getY()<0||this.getY()>409)
+				AppManager.getInstance().setMouseOut(true);
+			else
+				AppManager.getInstance().setMouseOut(false);
+			
+			if(!AppManager.getInstance().getMouseOut()) {
+				this.setLocation(this.getX()+e.getX()-50,this.getY()+e.getY()-50);
+				AppManager.getInstance().getChickenMain().getTabelPanel().repaint();
+			}
+			else {
+				this.setLocation(backX,backY);
+				AppManager.getInstance().getChickenMain().getTabelPanel().repaint();
+			}
+		}
+	}
+	
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		if(AppManager.getInstance().getFrameMode()==1) {
 			this.setLocation(this.getX()+e.getX()-50,this.getY()+e.getY()-50);
 			AppManager.getInstance().getChickenMain().getTabelPanel().repaint();
+		}
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {}
+	
+//=====================================================================================
+//	#쓰레드 클래스
+//=====================================================================================	
+	public class Timer extends Thread{
+		public void run() {
+			try {
+				while(timerOn) {
+					while(time>0) {
+						
+						repaint();
+						sleep(1000);
+						time--;
+					}
+				}
+			}catch(Exception e){
+				timerOn = false;
+				e.printStackTrace();
+			}
 		}
 	}
 }

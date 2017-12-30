@@ -18,9 +18,9 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	
 	//메뉴버튼에 모두 붙여야되는 메뉴바패널과 버튼들
 	private JPanel menuPanel; 	// 메뉴바 패널로 생성
-	private JButton itemBtn; 	//재고관리 버튼
-	private JButton salesBtn;	//매출관리 버튼
-	private JButton optionBtn; 	//환경설정 버튼
+	private MenuBtn itemBtn; 	//재고관리 버튼
+	private MenuBtn salesBtn;	//매출관리 버튼
+	private MenuBtn optionBtn; 	//환경설정 버튼
 	
 	//Dialog의 메뉴패널 밑에 붙일 각 메뉴 패널들 (카드레이아웃을 이용해 이 패널들 중 하나가 선택됨)
 	private JPanel itemPanel;	 	//재고 관리 패널
@@ -54,9 +54,14 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		
 		//메뉴버튼에 모두 붙여야되는 메뉴바패널과 버튼들
 		menuPanel = new JPanel(); 				//메뉴바 패널로 생성
-		itemBtn = new JButton("재고관리"); 		//재고관리 버튼
-		salesBtn = new JButton("매출관리"); 		//매출관리 버튼
-		optionBtn = new JButton("환경설정");	 	//환경설정 버튼
+		itemBtn = new MenuBtn("재고관리",1); 		//재고관리 버튼
+		salesBtn = new MenuBtn("매출관리",2); 		//매출관리 버튼
+		optionBtn = new MenuBtn("환경설정",3);	 	//환경설정 버튼
+		
+		//액션리스너와 연동
+		itemBtn.addActionListener(this);
+		salesBtn.addActionListener(this);
+		optionBtn.addActionListener(this);
 		
 		//카드 레이아웃 세팅
 		tab = new JPanel();
@@ -357,6 +362,8 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	
 	public void refreshTable(int index) {
 		TableBtn table=AppManager.getInstance().getTableArray().get(index);
+		if(table.getBoxNum()!=0) {
+		}
 	}
 	
 	@Override
@@ -507,6 +514,16 @@ public class ChickenDialog extends JDialog implements ActionListener{
 				boxUI.remove(bp);
 			}
 		}
-		
+	}
+	public class MenuBtn extends JButton implements EventAction{
+		int index;
+		public MenuBtn(String s, int i){
+			this.setText(s);
+			index = i;
+		}
+		@Override
+		public void doAction() {
+			setMode(index);
+		}
 	}
 }

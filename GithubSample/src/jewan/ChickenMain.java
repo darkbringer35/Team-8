@@ -4,13 +4,12 @@ package jewan;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-
 import javax.swing.*;
 import javax.swing.border.*;
 
 public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 상속받는다
 	
-	private JPanel backgroundPanel[];  
+	private JPanel[] backgroundPanel;  
 	private JPanel belowPanel[];
 	private JButton[] btnMenu;
 	private JButton[] btnCash;
@@ -23,7 +22,7 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 	
 	private JTextField[] txfCash;
 	
-	private ImageIcon icon;
+	
 //=====================================================================================
 //	#생성자
 //=====================================================================================	
@@ -39,11 +38,11 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		AppManager.getInstance().setTableArray(table);
 		
 		backgroundPanel = new JPanel[3];
-		for(int i=0; i<3;i++)
-			backgroundPanel[i] = new JPanel();
+		for(int i = 0;i < 3;i++) {
+			backgroundPanel[i]=new JPanel();
+		}
 		
-		icon = new ImageIcon("rc.png");
-		
+
 		//-----------------------------------------------------------------------------
 		//	#패널1 설정
 		//-----------------------------------------------------------------------------
@@ -83,9 +82,6 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 			btnTableEdit[i].setVisible(false);
 			btnTableEdit[i].addActionListener(this);
 		}
-		
-		
-		
 		
 		//-----------------------------------------------------------------------------
 		//	#패널3 설정
@@ -178,19 +174,30 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 //	#함수
 //=====================================================================================	
 	public void allTableClean() {
+		backgroundPanel[1].setBackground(Color.white);
 		for(TableBtn tb : AppManager.getInstance().getTableArray()){
 			tb.setBorderPainted(false);
+			tb.setForeground(Color.black);
 		}
 	}
 	
 	public void tableArrayRefresh() {
 		int index = 0;
+		AppManager.getInstance().setTid(-1);
 		for(TableBtn tb : AppManager.getInstance().getTableArray()){
 			tb.setIndex(index);
-			tb.setText(""+index);
+			tb.setText("테이블"+index);
 			index++;
 		}
 	}
+	public void tableDeleteMode() {
+		int index = 0;
+		backgroundPanel[1].setBackground(Color.YELLOW);
+		for(TableBtn tb : AppManager.getInstance().getTableArray()){
+			tb.setBorderPainted(true);
+		}
+	}
+	
 //=====================================================================================
 //	#액션이벤트 핸들링 & 기타 클래스
 //=====================================================================================
@@ -239,6 +246,14 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 				for(TableBtn tb : table)
 					tb.setEnabled(true);
 			}
+			else if(AppManager.getInstance().getFrameMode() == 2) {
+				AppManager.getInstance().setFrameMode(0);
+				for(int i=0;i<2;i++)
+					btnTableEdit[i].setVisible(false);
+				for(TableBtn tb : table)
+					tb.setEnabled(true);
+				allTableClean();
+			}
 		}
 	}
 	public class OptionBtn extends JButton implements EventAction{
@@ -257,8 +272,7 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		@Override
 		public void doAction() {
 			
-			if(table.size() < tableMax)
-			{
+			if(table.size() < tableMax){
 				TableBtn t = new TableBtn(table.size());
 				t.addActionListener(AppManager.getInstance().getChickenMain());
 				t.setEnabled(false);
@@ -276,7 +290,15 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 
 		@Override
 		public void doAction() {
-			
+			if(AppManager.getInstance().getFrameMode() != 2) {
+				AppManager.getInstance().setFrameMode(2);
+				tableDeleteMode();
+			}
+			else
+			{
+				AppManager.getInstance().setFrameMode(1);
+				allTableClean();
+			}
 		}
 	}
 	public class NumPadBtn extends JButton implements EventAction{
@@ -311,7 +333,6 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 			x=Integer.parseInt(txtCash[0].getText())-x;
 			txtCash[2].setText(""+(-x));	
 		}
-		
 	}
 	
 }
