@@ -1,7 +1,6 @@
 package jewan;
 
-import java.awt.BorderLayout;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.*;
@@ -9,19 +8,24 @@ import javax.swing.*;
 
 public class TableBtn extends JButton implements EventAction, Runnable, MouseListener{
 	private int index;
-	private int boxNum;
-	private ArrayList<String> boxIndex;
+	private int boxAmount;
+	private ArrayList<Table> tInfo=null;
+	
+	private Thread timer=null;
 	
 //=====================================================================================
 //	#생성자
 //=====================================================================================	
 	public TableBtn(int index){
 		this.index=index;
-		boxNum=0;
+		boxAmount=0;
+		
+		this.setText("테이블"+index);
 		
 		this.setVisible(true);
 		this.setSize(100,100);
 		this.setLocation(100+index*10,100+index*10);
+		this.setBorderPainted(false);
 		
 		this.addMouseListener(this);
 	}
@@ -36,21 +40,30 @@ public class TableBtn extends JButton implements EventAction, Runnable, MouseLis
 		this.index=index;
 	}
 	public int getBoxNum() {
-		return boxNum;
+		return boxAmount;
 	}
-	public void setBoxNum() {
-		
+	public void setBoxNum(int amount) {
+		boxAmount=amount;
+	}
+	public ArrayList<Table> getTInfo(){
+		return getTInfo();
+	}
+	public void setTInfo(ArrayList<Table> t) {
+		tInfo= t;
 	}
 //=====================================================================================
 //	#함수
 //=====================================================================================
 	
+	
 //=====================================================================================
 //	#액션이벤트 핸들링
 //=====================================================================================
 	public void doAction() {
-		AppManager.getInstance().getChickenDialog().setTableIndex(index);
+		AppManager.getInstance().setTid(index);
 		AppManager.getInstance().getChickenDialog().setMode(4);
+		AppManager.getInstance().getChickenMain().allTableClean();
+		this.setBorderPainted(true);
 	}
 	
 	
@@ -84,8 +97,9 @@ public class TableBtn extends JButton implements EventAction, Runnable, MouseLis
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		if(AppManager.getInstance().getChickenMain().getFrameMode()==1)
-			this.setLocation(this.getX()+e.getX(),this.getY()+e.getY());
+		if(AppManager.getInstance().getFrameMode()==1) {
+			this.setLocation(this.getX()+e.getX()-50,this.getY()+e.getY()-50);
 			AppManager.getInstance().getChickenMain().getTabelPanel().repaint();
+		}
 	}
 }

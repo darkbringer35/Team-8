@@ -7,9 +7,12 @@ public class AppManager {
 	private ChickenDao cDao;
 	private ChickenDialog cDia;
 	private Vector<TableBtn> table;
+	private int selectedTableIndex;
+	private int frameMode;
 	
 	private AppManager() {
-		
+		frameMode=0;
+		selectedTableIndex=-1;
 	}
 	public static AppManager getInstance() {
 		if(s_instance == null) s_instance = new AppManager();
@@ -39,5 +42,17 @@ public class AppManager {
 	}
 	public void setTableArray(Vector<TableBtn> t) {
 		table = t;
+	}
+	public int getTid() {
+		return selectedTableIndex;
+	}
+	public void setTid(int index) {
+		selectedTableIndex=index;
+	}
+	public int getFrameMode() {
+		return frameMode;
+	}
+	public void setFrameMode(int mode) {
+		frameMode=mode;
 	}
 }

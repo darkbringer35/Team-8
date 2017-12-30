@@ -23,8 +23,6 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 	
 	private JTextField[] txfCash;
 	
-	private int frameMode;
-	
 	private ImageIcon icon;
 //=====================================================================================
 //	#생성자
@@ -39,7 +37,6 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		
 		table = new Vector<TableBtn>();
 		AppManager.getInstance().setTableArray(table);
-		frameMode=0;
 		
 		backgroundPanel = new JPanel[3];
 		for(int i=0; i<3;i++)
@@ -79,7 +76,7 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		btnTableEdit= new JButton[2];
 		btnTableEdit[0] = new TableAdd("+");
 		btnTableEdit[0].setBounds(700,10, 45,35);
-		btnTableEdit[1] = new TableAdd("-");
+		btnTableEdit[1] = new TableDelete("-");
 		btnTableEdit[1].setBounds(750,10, 45,35);
 		for(int i=0;i<2;i++) {
 			backgroundPanel[1].add(btnTableEdit[i]);
@@ -174,19 +171,26 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 	public JPanel getTabelPanel	() {
 		return backgroundPanel[1];
 	}
-	public int getFrameMode() {
-		return frameMode;
-	}
-	public void setFrameMode(int mode) {
-		frameMode=mode;
-	}
 	public JTextField[] getTxfCash() {
 		return txfCash;
 	}
 //=====================================================================================
 //	#함수
 //=====================================================================================	
+	public void allTableClean() {
+		for(TableBtn tb : AppManager.getInstance().getTableArray()){
+			tb.setBorderPainted(false);
+		}
+	}
 	
+	public void tableArrayRefresh() {
+		int index = 0;
+		for(TableBtn tb : AppManager.getInstance().getTableArray()){
+			tb.setIndex(index);
+			tb.setText(""+index);
+			index++;
+		}
+	}
 //=====================================================================================
 //	#액션이벤트 핸들링 & 기타 클래스
 //=====================================================================================
@@ -220,15 +224,16 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 			this.setText(s);
 		}
 		public void doAction() {
-			if(frameMode == 0) {
-				frameMode=1;
+			if(AppManager.getInstance().getFrameMode() == 0) {
+				AppManager.getInstance().setFrameMode(1);
+				allTableClean();
 				for(int i=0;i<2;i++)
 					btnTableEdit[i].setVisible(true);
 				for(TableBtn tb : table)
 					tb.setEnabled(false);
 			}
-			else if(frameMode ==1) {
-				frameMode=0;
+			else if(AppManager.getInstance().getFrameMode() == 1) {
+				AppManager.getInstance().setFrameMode(0);
 				for(int i=0;i<2;i++)
 					btnTableEdit[i].setVisible(false);
 				for(TableBtn tb : table)

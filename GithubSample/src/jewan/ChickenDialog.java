@@ -34,6 +34,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	private int selectedTid;
 	private ArrayList<BoxLabel> boxUI;
 	private JLabel lblTable;
+	private JTextField tfTotalPrice;
 	
 	
 	//생성자
@@ -43,6 +44,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		//Dialog 사이즈 설정
 		this.setSize(875,625);
 		this.setLocation(500,300);
+		this.setResizable(false);
 		
 		//Dialog의 메뉴패널 밑에 붙일 각 메뉴 패널들 (카드레이아웃을 이용해 이 패널들 중 하나가 선택됨)
 		itemPanel = new JPanel(); //재고 관리 패널
@@ -80,6 +82,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		menuTab.add(menuPanel,"menu");
 		menuTab.add(lblTable,"table");
 		
+		//makeUI
 		ItemManagerUI();
 		salesManagerUI();
 		OptionUI();
@@ -96,9 +99,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	}
 	
 	//테이블UI용
-	public void setTableIndex(int index) {
-		selectedTid=index;
-	}
+	
 	public JPanel getTableUI(){
 		return boxSpace;
 	}
@@ -106,20 +107,28 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	public void refreshUI() {
 		if(mode==1){ // 1: 재고관리UI
 			//카드 레이아웃으로 재고관리 창 전환
+			setTitle("재고 관리");
+			this.setSize(875,625);
 			this.cardLayout2.show(this.menuTab,"menu");
 			this.cardLayout.show(this.tab,"item");
 		}
 		else if(mode == 2) { // 2: 매출관리UI
 			//카드 레이아웃으로 매출관리창으로 전환하기
+			setTitle("매출 관리");
+			this.setSize(875,625);
 			this.cardLayout2.show(this.menuTab,"menu");
 			this.cardLayout.show(this.tab,"sales");
 		}
 		else if(mode == 3) { // 3: 환결성정UI
 			//카드 레이아웃으로 환경설정창으로 전환하기
+			setTitle("환경 설정");
+			this.setSize(875,625);
 			this.cardLayout2.show(this.menuTab,"menu");
 			this.cardLayout.show(this.tab,"option");
 		}
 		else if(mode == 4) { // 4: 테이블 주문서 UI
+			this.setTitle("테이블 주문서");
+			this.setSize(500,500);
 			this.cardLayout.show(this.tab,"table");
 			this.cardLayout2.show(this.menuTab,"table");
 		}
@@ -297,42 +306,57 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		for(BoxLabel bp : boxUI)
 			boxSpace.add(bp);
 		
-		ApplyBtn applyBtn;
-		InsertBtn insertBtn;
-		DeleteBtn deleteBtn;
+		ApplyBtn applyBtn = new ApplyBtn("확인");
+		CashBtn cashBtn = new CashBtn("결제");
+		InsertBtn insertBtn = new InsertBtn("추가");
+		DeleteBtn deleteBtn = new DeleteBtn("삭제");
 		
-		applyBtn = new ApplyBtn("확인");
-		insertBtn = new InsertBtn("추가");
-		deleteBtn = new DeleteBtn("삭제");
 		
 		JScrollPane boxSpaceScroll = new JScrollPane(boxSpace);
-		boxSpaceScroll.setBounds(0,0,400,300);
+		boxSpaceScroll.setBounds(0,0,400,100);
 		boxSpaceScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		boxSpaceScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
 		JPanel btnSpace =new JPanel();
-		btnSpace.setBounds(0,300,400,50);
+		btnSpace.setSize(400,50);
 		
 		btnSpace.add(applyBtn);
+		btnSpace.add(cashBtn);
 		btnSpace.add(insertBtn);
 		btnSpace.add(deleteBtn);
 		
-		insertBtn.addActionListener(AppManager.getInstance().getChickenDialog());
-		deleteBtn.addActionListener(AppManager.getInstance().getChickenDialog());
+		JLabel lblColumn = new JLabel("	인덱스                          품목명                                             갯수                          가격");
+		lblColumn.setBounds(2,1,450,25);
+		boxSpace.add(lblColumn);
+		
+		JPanel pricePanel = new JPanel();
+		pricePanel.setSize(400,50);
+		
+		JLabel lblPrice = new JLabel("총 가격");
+		
+		tfTotalPrice = new JTextField("10");
+		tfTotalPrice.setEditable(false);
+		tfTotalPrice.setBackground(Color.WHITE);
+		tfTotalPrice.setText("                     ");
+		
+		pricePanel.add(lblPrice);
+		
+		pricePanel.add(tfTotalPrice);
+		
+		insertBtn.addActionListener(this);
+		deleteBtn.addActionListener(this);
 		
 		tablePanel.add(boxSpaceScroll,BorderLayout.CENTER);
+		tablePanel.add(pricePanel, BorderLayout.PAGE_START);
 		tablePanel.add(btnSpace,BorderLayout.PAGE_END);
 		
 		this.add(menuTab,BorderLayout.PAGE_START);
 		this.add(tab, BorderLayout.CENTER);
 		
-		
-		
-		
 	}
 	
-	public void refreshItem() {
-		
+	public void refreshTable(int index) {
+		TableBtn table=AppManager.getInstance().getTableArray().get(index);
 	}
 	
 	@Override
@@ -350,34 +374,43 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		private MinusBtn minusBtn;
 		private JTextField amount;
 		private JLabel lblIndex;
+		private JTextField price;
 			
 		public BoxLabel(int index){
 			this.index=index;
 			
-			if(index%2==0)
-				this.setBounds(5,1+(index/2)*30,375,25);
-			else
-				this.setBounds(400,1+(index/2)*30,375,25);
+			this.setBounds(2,1+(index+1)*30,450,25);
 			this.setLayout(null);
 			
 			menu= new JComboBox();
 			addBtn = new AddBtn("+",index);
 			minusBtn = new MinusBtn("-",index);
 			amount = new JTextField(5);
-			lblIndex = new JLabel(""+index);
+			amount.setHorizontalAlignment(JTextField.RIGHT);
+			amount.setText("1");
+			price = new JTextField(5);
+			price.setHorizontalAlignment(JTextField.RIGHT);
+			price.setEditable(false);
+			price.setBackground(Color.WHITE);
+			lblIndex = new JLabel("#"+index);
+			lblIndex.setHorizontalAlignment(JLabel.CENTER);
 			
-			menu.setBounds(0,0, 205,25);
-			minusBtn.setBounds(206,0,50,25);
-			amount.setBounds(257,0,50,25);
-			addBtn.setBounds(307,0,50,25);
+			lblIndex.setBounds(0,0,30,25);
+			menu.setBounds(30,0, 205,25);
+			minusBtn.setBounds(236,0,50,25);
+			amount.setBounds(287,0,40,25);
+			addBtn.setBounds(327,0,50,25);
+			price.setBounds(378,0,70,25);
 			
 			addBtn.addActionListener(AppManager.getInstance().getChickenDialog());
 			minusBtn.addActionListener(AppManager.getInstance().getChickenDialog());
 			
+			this.add(lblIndex);
 			this.add(menu);
 			this.add(minusBtn);
 			this.add(amount);
 			this.add(addBtn);
+			this.add(price);
 			
 		}
 		
@@ -422,6 +455,17 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	}
 	public class ApplyBtn extends JButton implements EventAction{
 		public ApplyBtn(String s){
+			this.setText(s);
+		}
+
+		@Override
+		public void doAction() {
+			
+		}
+		
+	}
+	public class CashBtn extends JButton implements EventAction{
+		public CashBtn(String s){
 			this.setText(s);
 		}
 
