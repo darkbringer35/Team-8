@@ -7,5 +7,7 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/jre-9.0.1/lib/mysql-connector-java-5.1.45-bin.jar"/>
+	<classpathentry kind="lib" path="C:/Users/ME/Documents/freechart/jfreechart-1.0.19-demo.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/MySQL/Connector.J 5.1/mysql-connector-java-5.1.44-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

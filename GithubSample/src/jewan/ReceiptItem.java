@@ -1,6 +1,7 @@
 package jewan;
 
 
+
 public class ReceiptItem {
 	int itemIndex;
 	int itemAmount;

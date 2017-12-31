@@ -1,11 +1,11 @@
 package jewan;
 
+
 import java.util.*;
 
 public class AppManager {
 	private static AppManager s_instance;
 	private ChickenMain cMain;
-	private ChickenDao cDao;
 	private ChickenDialog cDia;
 	private Vector<TableBtn> table;
 	private int selectedTableIndex;
@@ -13,6 +13,7 @@ public class AppManager {
 	private int setTime;
 	private boolean mouseOut;
 	private DAOManager dao;
+	private TableDao tDao;
 	
 	private AppManager() {
 		frameMode=0;
@@ -29,12 +30,6 @@ public class AppManager {
 	}
 	public void setChickenMain(ChickenMain main){
 		cMain=main;
-	}
-	public ChickenDao getChickenDao() {
-		return cDao;
-	}
-	public void setChickenDao(ChickenDao dao) {
-		cDao = dao;
 	}
 	public ChickenDialog getChickenDialog() {
 		return cDia;
@@ -78,4 +73,12 @@ public class AppManager {
 	public void setDAOManger(DAOManager dao) {
 		this.dao = dao;
 	}
+	public TableDao getTableDao()	{
+		return tDao;
+	}
+	public void setTableDao(TableDao tDao) {
+		this.tDao = tDao;
+	}
+	
+	
 }

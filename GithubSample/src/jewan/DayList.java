@@ -1,6 +1,7 @@
 package jewan;
 
 
+
 public class DayList {
 	
 	String day;

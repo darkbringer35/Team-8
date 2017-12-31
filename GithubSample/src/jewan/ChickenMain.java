@@ -2,6 +2,7 @@ package jewan;
 
 
 
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -35,14 +36,10 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		setTitle("치킨"); // 프레임 타이틀 설정
 		this.setBackground(Color.white);
 		
-		table = new Vector<TableBtn>();
-		AppManager.getInstance().setTableArray(table);
-		
 		backgroundPanel = new JPanel[3];
 		for(int i = 0;i < 3;i++) {
 			backgroundPanel[i]=new JPanel();
 		}
-		
 
 		//-----------------------------------------------------------------------------
 		//	#패널1 설정
@@ -52,9 +49,15 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		
 		int menuBtnNum=4, menuWidth = 200,menuHeight = 130;
 		
-		btnMenu=new JButton[menuBtnNum];
-		btnMenu[0] = new ItemManageBtn("재고관리");  
-		btnMenu[1] = new SalesManageBtn("매출관리"); 
+		
+/*이미지*/ImageIcon[] image = new ImageIcon[4];
+/*이미지*/for(int i = 0; i < 4; i++) {
+/*이미지*/	image[i] = new ImageIcon("menuBtn"+i+".png");	//프로젝트 폴더에 해당되는 이미지 파일 이름으로 넣을 것
+/*이미지*/}
+		
+		btnMenu = new JButton[menuBtnNum];
+/*이미지*/btnMenu[0] = new ItemManageBtn(image[0]);  			//버튼에 생성자 추가해서 가능함
+		btnMenu[1] = new SalesManageBtn("매출관리"); 			//메뉴 버튼들에는 이미지 받는 생성자를 전부 집어 넣어놨음
 		btnMenu[2] = new TableEditBtn("테이블 편집"); 
 		btnMenu[3] = new OptionBtn("환경설정");
 		
@@ -83,6 +86,20 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 			btnTableEdit[i].setVisible(false);
 			btnTableEdit[i].addActionListener(this);
 		}
+		table = AppManager.getInstance().getTableDao().getTableList();
+		if(table == null) {
+			table = new Vector<TableBtn>();
+		}
+		else {
+			for(TableBtn tb : table) {
+				backgroundPanel[1].add(tb);
+				tb.addActionListener(this);
+				tb.updateUI();
+				
+			}
+		}
+		AppManager.getInstance().setTableArray(table);
+		
 		
 		//-----------------------------------------------------------------------------
 		//	#패널3 설정
@@ -218,6 +235,11 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		public ItemManageBtn(String s){
 			this.setText(s);
 		}
+		public ItemManageBtn(ImageIcon i){
+			
+			this.setIcon(i);
+			
+		}
 		public void doAction() {
 			AppManager.getInstance().getChickenDialog().setMode(1);
 		}
@@ -227,6 +249,9 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		public SalesManageBtn(String s){
 			this.setText(s);
 		}
+		public SalesManageBtn(ImageIcon i){
+			this.setIcon(i);
+		}
 		public void doAction() {
 			AppManager.getInstance().getChickenDialog().setMode(2);
 		}
@@ -235,6 +260,9 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 	public class TableEditBtn extends JButton implements EventAction{
 		public TableEditBtn(String s){
 			this.setText(s);
+		}
+		public TableEditBtn(ImageIcon i){
+			this.setIcon(i);
 		}
 		public void doAction() {
 			if(AppManager.getInstance().getFrameMode() == 0) {
@@ -251,6 +279,7 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 					btnTableEdit[i].setVisible(false);
 				for(TableBtn tb : table)
 					tb.setEnabled(true);
+				AppManager.getInstance().getTableDao().insertTable(table);
 			}
 			else if(AppManager.getInstance().getFrameMode() == 2) {
 				AppManager.getInstance().setFrameMode(0);
@@ -265,6 +294,9 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 	public class OptionBtn extends JButton implements EventAction{
 		public OptionBtn(String s){
 			this.setText(s);
+		}
+		public OptionBtn(ImageIcon i){
+			this.setIcon(i);
 		}
 		public void doAction() {
 			AppManager.getInstance().getChickenDialog().setMode(3);

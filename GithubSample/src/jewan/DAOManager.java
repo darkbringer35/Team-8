@@ -1,6 +1,7 @@
 package jewan;
 
 
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -18,7 +19,7 @@ public class DAOManager {
 	Connection conn; // DB와 연결할 변수 선언
 	PreparedStatement pstmt; // 쿼리를 날리기전 미리 컴파일 하여 날리는 변수 선언
 	ResultSet rs; // DB의 결과값을 저장할 변수 선언
-	String jdbcUrl = "jdbc:mysql://192.168.25.248/example"; // DB의 경로를 저장할 변수 선언
+	String jdbcUrl = "jdbc:mysql://localhost/chicken"; // DB의 경로를 저장할 변수 선언
 	String sql; // DB의 명령문을 저장할 변수 선언
 	int lastIndex = 0; // 메뉴리스트 테이블이 갖고있는 마지막 인덱스 변수
 	Vector<String> items = null;
@@ -31,7 +32,7 @@ public class DAOManager {
 		try {
 
 			Class.forName(jdbcDriver); // jdbc드라이버 로딩
-			conn = DriverManager.getConnection(jdbcUrl, "root", "ghktks12"); // DB경로, 사용자id,p/w를 통하여 연결하는 변수 생성
+			conn = DriverManager.getConnection(jdbcUrl, "root", "0305"); // DB경로, 사용자id,p/w를 통하여 연결하는 변수 생성
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -127,6 +128,24 @@ public class DAOManager {
 		return days;
 	}
 
+	public DayList getOneTotalTable(String day) {			
+		connectDB();
+		sql = "select * from totallist where day = ?";
+		DayList d = new DayList();
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, day);
+			
+			rs = pstmt.executeQuery();			
+			d.setDay(rs.getString("day"));
+			d.setSales(rs.getInt("totalsales"));
+			d.setStock(rs.getInt("totalprice"));
+	
+		} catch (Exception e) {
+		}
+		closeDB(); // DB연결을 해제한다
+		return d;
+	}
 	
 	public DayList getOneDay(int index, String day) {
 		connectDB();
@@ -221,8 +240,8 @@ public class DAOManager {
 				pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, day);
 				pstmt.setInt(2, sales);
-				pstmt.setInt(3, getStock(index)-sales);
-				pstmt.setInt(4, getPrice(index));
+				pstmt.setInt(3, stock);
+				pstmt.setInt(4, price);
 				result = pstmt.executeUpdate();
 			}
 
@@ -258,7 +277,6 @@ public class DAOManager {
 				pstmt.setString(3,day);
 				result = pstmt.executeUpdate();
 			}
-			System.out.println(""+flag);
 			
 		}
 
@@ -368,7 +386,7 @@ public class DAOManager {
 		return result;
 	}
 
-	public int getPrice(int index) { // 테이블의 마지막 인덱스의 판매량을 나타내준다
+	public int getPrice(int index) { // 테이블의 마지막 인덱스의 가격을 나타내준다
 		int result = 0;
 		sql = "select price from chicken" + index + " order by day desc limit 1"; 
 
@@ -425,5 +443,18 @@ public class DAOManager {
 	
 	public Vector<String> getItems(){return items;}
 	
+	public void updatePay(ArrayList<ReceiptItem> receipt,String day) {
+		//치킨 데이터베이스로 가는거 receipt.get(1).getItemIndex();
+		//재고랑 판매량 변화 receipt.get(0).getItemAmount();
+		try {
+			for(ReceiptItem ri : receipt) {
+				insertList(ri.getItemIndex(), day, ri.getItemAmount(), 100, getPrice(ri.getItemIndex()));
+			}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	
+	}
 
 }
