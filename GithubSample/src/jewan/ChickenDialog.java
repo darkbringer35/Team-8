@@ -38,10 +38,14 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	private JLabel lblTable;
 	private JTextField tfTotalPrice;
 	private TableBtn selectedTable;
-	private ApplyBtn applyBtn;
+	
+	private JButton[] receiptBtn;
+	/*private ApplyBtn applyBtn;
 	private CashBtn cashBtn;
 	private InsertBtn insertBtn;
 	private DeleteBtn deleteBtn;
+	private ServingBtn servingBtn;
+	*/
 
 	private JTextField txfOption;
 	
@@ -338,10 +342,13 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		for(BoxLabel bp : boxUI)
 			boxSpace.add(bp);
 		
-		applyBtn = new ApplyBtn("확인");
-		cashBtn = new CashBtn("결제");
-		insertBtn = new InsertBtn("추가");
-		deleteBtn = new DeleteBtn("삭제");
+		receiptBtn = new JButton[5];
+		
+		receiptBtn[0] = new ApplyBtn("확인");
+		receiptBtn[1] = new CashBtn("결제");
+		receiptBtn[2] = new InsertBtn("추가");
+		receiptBtn[3] = new DeleteBtn("삭제");
+		receiptBtn[4] = new ServingBtn("서빙");
 		
 		
 		JScrollPane boxSpaceScroll = new JScrollPane(boxSpace);
@@ -352,15 +359,10 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		JPanel btnSpace =new JPanel();
 		btnSpace.setSize(400,50);
 		
-		btnSpace.add(applyBtn);
-		btnSpace.add(cashBtn);
-		btnSpace.add(insertBtn);
-		btnSpace.add(deleteBtn);
-		
-		applyBtn.addActionListener(this);
-		cashBtn.addActionListener(this);
-		insertBtn.addActionListener(this);
-		deleteBtn.addActionListener(this);
+		for(int i=0;i<5;i++) {
+			btnSpace.add(receiptBtn[i]); 
+			receiptBtn[i].addActionListener(this);
+		}
 		
 		JLabel lblColumn = new JLabel("	인덱스                          품목명                                             갯수                          가격");
 		lblColumn.setBounds(2,1,450,25);
@@ -381,9 +383,6 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		pricePanel.add(lblPrice);
 		
 		pricePanel.add(tfTotalPrice);
-		
-		insertBtn.addActionListener(this);
-		deleteBtn.addActionListener(this);
 		
 		tablePanel.add(boxSpaceScroll,BorderLayout.CENTER);
 		tablePanel.add(pricePanel, BorderLayout.PAGE_START);
@@ -417,7 +416,9 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			this.setBounds(2,1+(index+1)*30,450,25);
 			this.setLayout(null);
 			
-			menu= new JComboBox();
+			String[] str = new String[10];
+			
+			menu= new JComboBox(str);
 			addBtn = new AddBtn("+",index);
 			minusBtn = new MinusBtn("-",index);
 			amount = new JTextField(5);
@@ -430,6 +431,8 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			price.setBackground(Color.WHITE);
 			lblIndex = new JLabel("#"+index);
 			lblIndex.setHorizontalAlignment(JLabel.CENTER);
+			
+			menu.setModel(new DefaultComboBoxModel(AppManager.getInstance().getDAOManger().getComboIndex()));
 			
 			lblIndex.setBounds(0,0,30,25);
 			menu.setBounds(30,0, 205,25);
@@ -550,6 +553,15 @@ public class ChickenDialog extends JDialog implements ActionListener{
 				AppManager.getInstance().getChickenDialog().getTableUI().repaint();
 				boxUI.remove(bp);
 			}
+		}
+	}
+	public class ServingBtn extends JButton implements EventAction{
+		public ServingBtn(String s){
+			this.setText(s);
+		}
+		@Override
+		public void doAction() {
+			selectedTable.timerOff();
 		}
 	}
 	public class MenuBtn extends JButton implements EventAction{

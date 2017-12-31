@@ -92,6 +92,7 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 		timerOn=false;
 		if(timer!=null) timer.stop();
 		timer=null;
+		repaint();
 		timeReset();
 	}
 //=====================================================================================

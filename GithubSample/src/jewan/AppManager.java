@@ -12,6 +12,7 @@ public class AppManager {
 	private int frameMode;
 	private int setTime;
 	private boolean mouseOut;
+	private DAOManager dao;
 	
 	private AppManager() {
 		frameMode=0;
@@ -70,5 +71,11 @@ public class AppManager {
 	}
 	public void setMouseOut(boolean b) {
 		mouseOut=b;
+	}
+	public DAOManager getDAOManger()	{
+		return dao;
+	}
+	public void setDAOManger(DAOManager dao) {
+		this.dao = dao;
 	}
 }
