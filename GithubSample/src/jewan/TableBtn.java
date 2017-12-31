@@ -1,5 +1,6 @@
 package jewan;
 
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -8,7 +9,7 @@ import javax.swing.*;
 public class TableBtn extends JButton implements EventAction, MouseListener, MouseMotionListener{
 	private int index;
 	private int boxAmount;
-	private ArrayList<Table> tInfo=null;
+	private ArrayList<ReceiptItem> tInfo=null;
 	private int time=0;
 	private boolean timerOn = false;
 	private int backX;
@@ -52,10 +53,10 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 	public void setBoxNum(int amount) {
 		boxAmount=amount;
 	}
-	public ArrayList<Table> getTInfo(){
+	public ArrayList<ReceiptItem> getTInfo(){
 		return getTInfo();
 	}
-	public void setTInfo(ArrayList<Table> t) {
+	public void setTInfo(ArrayList<ReceiptItem> t) {
 		tInfo= t;
 	}
 //=====================================================================================
