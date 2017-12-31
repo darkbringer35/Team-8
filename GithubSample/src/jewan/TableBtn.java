@@ -9,21 +9,24 @@ import javax.swing.*;
 
 public class TableBtn extends JButton implements EventAction, MouseListener, MouseMotionListener{
 	private int index;
-	private int boxAmount = 0;
+	private int boxAmount;
 	private ArrayList<ReceiptItem> tInfo=null;
-	private int time=0;
-	private boolean timerOn = false;
 	private int backX;
 	private int backY;
+	private int price;
 	
+	private int time=0;
 	private Timer timer=null;
+	private boolean timerOn = false;
+	private boolean blackRed = false;
 	
 //=====================================================================================
 //	#생성자
 //=====================================================================================	
 	public TableBtn(int index){
 		this.index=index;
-		
+		boxAmount = 0;
+		price = 0;
 		timeReset();
 		this.setText("테이블"+index);
 		
@@ -54,10 +57,16 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 		boxAmount=amount;
 	}
 	public ArrayList<ReceiptItem> getTInfo(){
-		return getTInfo();
+		return tInfo;
 	}
 	public void setTInfo(ArrayList<ReceiptItem> t) {
-		tInfo= t;
+		tInfo = t;
+	}
+	public void setPrice(int pr) {
+		price = pr;
+	}
+	public int getPrice() {
+		return price;
 	}
 //=====================================================================================
 //	#함수
@@ -72,7 +81,11 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 		if(time%60<10) sec="0"+time%60;
 		else sec=""+time%60;
 		if(timerOn) {
-			page.setColor(Color.black);
+			if(blackRed)
+				page.setColor(Color.red);
+			else
+				page.setColor(Color.black);
+			
 			page.drawString(min+":"+sec, 10, 10);
 		}
 	}
@@ -149,9 +162,9 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 	public void mouseReleased(MouseEvent e) {
 		if(AppManager.getInstance().getFrameMode()==0) {
 			if(this.getX()<120&&this.getY()>409) {
-				System.out.println("성공");
 				JTextField[] txf=AppManager.getInstance().getChickenMain().getTxfCash();
-				txf[0].setText("1"+index);
+				txf[0].setText(""+price);
+				txf[2].setText(""+(Integer.parseInt(txf[1].getText())-price));
 			}
 			this.setLocation(backX,backY);
 			AppManager.getInstance().getChickenMain().getTabelPanel().repaint();
@@ -190,13 +203,15 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 	public class Timer extends Thread{
 		public void run() {
 			try {
+				while(time>0) {	
+					repaint();
+					sleep(1000);
+					time--;
+				}
 				while(timerOn) {
-					while(time>0) {
-						
-						repaint();
-						sleep(1000);
-						time--;
-					}
+					repaint();
+					sleep(500);
+					blackRed = !blackRed; 
 				}
 			}catch(Exception e){
 				timerOn = false;

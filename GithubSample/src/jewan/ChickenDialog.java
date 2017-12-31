@@ -120,14 +120,31 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		
 	//테이블UI용
 	public void refreshTable(int index) {
+		
+		
 		for(int i = boxUI.size(); i>0 ;i--)
 			receiptBtn[3].doClick();
 		
 		selectedTable=AppManager.getInstance().getTableArray().get(index);
-		if(selectedTable.getBoxNum()>0) {
+		ArrayList<ReceiptItem> info = selectedTable.getTInfo();
+		
+		for(int i=0; i<selectedTable.getBoxNum()-1;i++) {
+			receiptBtn[2].doClick();
 		}
-		else {
+		
+		if(info!=null) {
+			for(int i = 0; i<boxUI.size() ;i++) {
+				System.out.println(""+info.get(i).getItemIndex());
+				boxUI.get(i).selectBox(info.get(i).getItemIndex());
+				boxUI.get(i).setAmount(info.get(i).getItemAmount());
+			}
 		}
+		
+		if(info==null) {
+			boxUI.get(0).selectBox(0);
+			boxUI.get(0).setAmount(0);
+		}
+		boxUI.get(0).refreshBox();
 	}
 	
 	public void refreshUI() {
@@ -161,6 +178,11 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			refreshTable(AppManager.getInstance().getTid());
 		}
 		this.setVisible(true);
+	}
+	
+	public String getToday() {
+		Date d =new Date();
+		return (d.getYear()+1900)+"-"+(d.getMonth()+1)+"-"+d.getDate();
 	}
 
 //=====================================================================================
@@ -376,7 +398,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		JLabel lblPrice = new JLabel("총 가격");
 		
 		tfTotalPrice = new JTextField(6);
-		tfTotalPrice.setText("100");
+		tfTotalPrice.setText("0");
 		tfTotalPrice.setHorizontalAlignment(JTextField.RIGHT);
 		tfTotalPrice.setEditable(false);
 		tfTotalPrice.setBackground(Color.WHITE);
@@ -429,6 +451,14 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			amount = new JTextField(5);
 			amount.setHorizontalAlignment(JTextField.RIGHT);
 			amount.setText("0");
+			amount.addKeyListener(new KeyListener(){
+				public void keyPressed(KeyEvent e) {}
+				public void keyReleased(KeyEvent e) {
+					boxUI.get(index).refreshBox();
+				}
+				public void keyTyped(KeyEvent e) {}
+			});
+			
 			price = new JTextField(5);
 			price.setText("0");
 			price.setHorizontalAlignment(JTextField.RIGHT);
@@ -438,6 +468,15 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			lblIndex.setHorizontalAlignment(JLabel.CENTER);
 			
 			menu.setModel(new DefaultComboBoxModel(AppManager.getInstance().getDAOManger().getComboIndex()));
+			menu.addItemListener(new ItemListener() {
+
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					refreshBox();
+						
+				}
+				
+			});
 			
 			lblIndex.setBounds(0,0,30,25);
 			menu.setBounds(30,0, 205,25);
@@ -464,11 +503,21 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		public void setAmount(int amount) {
 			this.amount.setText(""+amount);
 		}
+		public int getPrice() {
+			return Integer.parseInt(price.getText());
+		}
 		public int getSelectedBox(){
 			return menu.getSelectedIndex();
 		}
-		public void refreshBoxPanel() {
-			menu.repaint();
+		public void selectBox(int index){
+			menu.setSelectedItem(index);
+		}
+		public void refreshBox() {
+			int pr=0;
+			price.setText(""+(Integer.parseInt(amount.getText()) * AppManager.getInstance().getDAOManger().getPrice(menu.getSelectedIndex())));
+			for(BoxLabel bl : boxUI)
+				pr+=bl.getPrice();
+				tfTotalPrice.setText(""+pr);
 		}
 	}
 	public class RegisterBtn extends JButton implements EventAction{
@@ -479,6 +528,14 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		@Override
 		public void doAction() {
 			AppManager.getInstance().getDAOManger().addMenu(itemTXT[0].getText());
+			
+			AppManager.getInstance().getDAOManger().insertList(
+					AppManager.getInstance().getDAOManger().getKey()
+					, AppManager.getInstance().getChickenDialog().getToday()
+					, 0
+					, Integer.parseInt(itemTXT[1].getText())
+					, Integer.parseInt(itemTXT[2].getText())
+					);
 			
 		}
 	}
@@ -514,6 +571,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		public void doAction() {
 			BoxLabel bl = boxUI.get(index);
 			bl.setAmount(bl.getAmount()+1);
+			bl.refreshBox();
 		}
 		
 	}
@@ -529,6 +587,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			BoxLabel bl = boxUI.get(index);
 			if(bl.getAmount()>0)
 				bl.setAmount(bl.getAmount()-1);
+			bl.refreshBox();
 		}
 		
 	}
@@ -539,7 +598,19 @@ public class ChickenDialog extends JDialog implements ActionListener{
 
 		@Override
 		public void doAction() {
-			selectedTable.timerStart();
+			if(Integer.parseInt(tfTotalPrice.getText()) != 0) {
+				selectedTable.setBoxNum(boxUI.size());
+				ArrayList<ReceiptItem> info = new ArrayList<ReceiptItem>();
+				for(BoxLabel bl : boxUI) {
+					ReceiptItem ri = new ReceiptItem();
+					ri.setItemIndex(bl.getSelectedBox());
+					ri.setItemAmount(bl.getAmount());
+					info.add(ri);
+				}
+				selectedTable.setPrice(Integer.parseInt(tfTotalPrice.getText()));
+				selectedTable.setTInfo(info);
+				selectedTable.timerStart();
+			}
 			AppManager.getInstance().getChickenDialog().setVisible(false);
 		}
 		

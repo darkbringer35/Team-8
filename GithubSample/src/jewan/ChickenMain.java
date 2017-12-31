@@ -382,7 +382,12 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame¿ª 
 		}
 		@Override
 		public void doAction() {
-			
+			TableBtn tb = table.get(AppManager.getInstance().getTid());
+			AppManager.getInstance().getDAOManger().updatePay(tb.getTInfo(), AppManager.getInstance().getChickenDialog().getToday());
+			tb.setBoxNum(0);
+			tb.setPrice(0);
+			tb.setTInfo(null);
+			tb.timerOff();
 		}
 		
 	}
