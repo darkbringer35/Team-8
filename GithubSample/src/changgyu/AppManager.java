@@ -1,11 +1,11 @@
 package changgyu;
 
+
 import java.util.*;
 
 public class AppManager {
 	private static AppManager s_instance;
 	private ChickenMain cMain;
-	private ChickenDao cDao;
 	private ChickenDialog cDia;
 	private Vector<TableBtn> table;
 	private int selectedTableIndex;
@@ -30,12 +30,6 @@ public class AppManager {
 	}
 	public void setChickenMain(ChickenMain main){
 		cMain=main;
-	}
-	public ChickenDao getChickenDao() {
-		return cDao;
-	}
-	public void setChickenDao(ChickenDao dao) {
-		cDao = dao;
 	}
 	public ChickenDialog getChickenDialog() {
 		return cDia;

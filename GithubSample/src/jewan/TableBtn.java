@@ -9,7 +9,7 @@ import javax.swing.*;
 
 public class TableBtn extends JButton implements EventAction, MouseListener, MouseMotionListener{
 	private int index;
-	private int boxAmount;
+	private int boxAmount = 0;
 	private ArrayList<ReceiptItem> tInfo=null;
 	private int time=0;
 	private boolean timerOn = false;
@@ -23,7 +23,6 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 //=====================================================================================	
 	public TableBtn(int index){
 		this.index=index;
-		boxAmount=0;
 		
 		timeReset();
 		this.setText("Å×ÀÌºí"+index);

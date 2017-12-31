@@ -42,14 +42,10 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	private TableBtn selectedTable;
 	
 	private JButton[] receiptBtn;
-	/*private ApplyBtn applyBtn;
-	private CashBtn cashBtn;
-	private InsertBtn insertBtn;
-	private DeleteBtn deleteBtn;
-	private ServingBtn servingBtn;
-	*/
-
 	private JTextField txfOption;
+	
+	private JComboBox itemCB;
+	private JTextField[] itemTXT;
 	
 	//생성자
 	public ChickenDialog() {
@@ -107,25 +103,31 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		TableUI();
 		
 	}
-	
-	
-	//-----------메소드---------------
-	
+
+//=====================================================================================
+//	#get/set메서드
+//=====================================================================================	
 	public void setMode(int m) {
 		mode=m;
 		refreshUI();
 	}
-	
+	public JPanel getTableUI(){
+		return boxSpace;
+	}
+//=====================================================================================
+//	#함수
+//=====================================================================================	
+		
 	//테이블UI용
 	public void refreshTable(int index) {
+		for(int i = boxUI.size(); i>0 ;i--)
+			receiptBtn[3].doClick();
+		
 		selectedTable=AppManager.getInstance().getTableArray().get(index);
 		if(selectedTable.getBoxNum()>0) {
 		}
 		else {
 		}
-	}
-	public JPanel getTableUI(){
-		return boxSpace;
 	}
 	
 	public void refreshUI() {
@@ -160,7 +162,10 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		}
 		this.setVisible(true);
 	}
-	
+
+//=====================================================================================
+//	#UI구성 함수
+//=====================================================================================	
 	//재고 관리 창 UI
 	public void ItemManagerUI(){
 		//창 제목 설정
@@ -178,43 +183,44 @@ public class ChickenDialog extends JDialog implements ActionListener{
 				p1.add(scroll, BorderLayout.CENTER);
 			
 				//속성 입출력 패널 p2구성
-				JPanel p2 = new JPanel(); //p2패널 생성
-				JComboBox cb = new JComboBox(); //메뉴번호 콤보박스
-				JTextField t1 = new JTextField(); //메뉴명 텍스트필드
-				JTextField t2 = new JTextField(); //재고 텍스트필드
-				JTextField t3 = new JTextField(); //가격 텍스트필드
-				JLabel l1 = new JLabel("메뉴번호");//메뉴번호 라벨
-				JLabel l2 = new JLabel("메뉴명");//메뉴명 라벨
-				JLabel l3 = new JLabel("재고");//재고 라벨
-				JLabel l4 = new JLabel("가격");//가격 라벨
-				//패널 p2 레이아웃 및 위젯 설정
-				p2.setLayout(null); //p2패널 레이아웃 없음
-				cb.setBounds(120, 50, 230, 50);
-				t1.setBounds(120, 150, 230, 50);
-				t2.setBounds(120, 250, 230, 50);
-				t3.setBounds(120, 350, 230, 50);
-				l1.setBounds(30,50,100,50);
-				l2.setBounds(30,150,100,50);
-				l3.setBounds(30,250,100,50);
-				l4.setBounds(30,350,100,50);
-				p2.add(cb); //p2패널에 부착
-				p2.add(t1);
-				p2.add(t2);
-				p2.add(t3);
-				p2.add(l1);
-				p2.add(l2);
-				p2.add(l3);
-				p2.add(l4);
+				JPanel p2 = new JPanel(); 	//p2패널 생성
+				p2.setLayout(null); 		//p2패널 레이아웃 없음
+				
+				itemCB = new JComboBox(); //메뉴번호 콤보박스
+				itemCB.setBounds(120, 50, 230, 50);
+				p2.add(itemCB);
+				
+				itemTXT = new JTextField[3];	//메뉴명,재고,가격 텍스트필드
+				for(int i=0;i<3;i++) {
+					itemTXT[i] = new JTextField();
+					itemTXT[i].setBounds(120,150+100*i,230,50);
+					p2.add(itemTXT[i]);
+				}
+				
+				JLabel[] lblItem = new JLabel[4];
+				lblItem[0] = new JLabel("메뉴번호");//메뉴번호 라벨
+				lblItem[1] = new JLabel("메뉴명");//메뉴명 라벨
+				lblItem[2] = new JLabel("재고");//재고 라벨
+				lblItem[3] = new JLabel("가격");//가격 라벨
+				for(int i =0; i < 4 ; i++) {
+					lblItem[i].setBounds(30, 50+100*i, 100, 50);
+					p2.add(lblItem[i]);
+				}
 				
 				//버튼 패널 p3 구성
 				JPanel p3 = new JPanel(); //p3패널 생성
-				JButton b1 = new JButton("등록"); //등록 버튼
-				JButton b2 = new JButton("조회"); //조회 버튼
-				JButton b3 = new JButton("삭제"); //삭제 버튼
 				p3.setLayout(new FlowLayout()); //p3패널 플로우 레이아웃
-				p3.add(b1); //p3패널에 부착
-				p3.add(b2);
-				p3.add(b3);
+				
+				JButton[] btnItem = new JButton[3]; 
+				btnItem[0] = new RegisterBtn("등록"); //등록 버튼
+				btnItem[1] = new InquiryBtn("조회"); //조회 버튼
+				btnItem[2] = new DelItemBtn("삭제"); //삭제 버튼
+				
+				for(int i = 0; i < 3; i++) {
+					p3.add(btnItem[i]);
+					btnItem[i].addActionListener(this);
+				}
+				
 				
 
 				//item Panel 레이아웃 설정 및 부속 패널들 붙이기
@@ -388,7 +394,10 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		this.add(tab, BorderLayout.CENTER);
 		
 	}
-	
+
+//=====================================================================================
+//	#액션이벤트 핸들링 & 기타 클래스
+//=====================================================================================
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
@@ -419,7 +428,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			minusBtn = new MinusBtn("-",index);
 			amount = new JTextField(5);
 			amount.setHorizontalAlignment(JTextField.RIGHT);
-			amount.setText("1");
+			amount.setText("0");
 			price = new JTextField(5);
 			price.setText("0");
 			price.setHorizontalAlignment(JTextField.RIGHT);
@@ -462,6 +471,37 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			menu.repaint();
 		}
 	}
+	public class RegisterBtn extends JButton implements EventAction{
+		
+		public RegisterBtn(String s){
+			this.setText(s);
+		}
+		@Override
+		public void doAction() {
+			AppManager.getInstance().getDAOManger().addMenu(itemTXT[0].getText());
+			
+		}
+	}
+	public class InquiryBtn extends JButton implements EventAction{
+		
+		public InquiryBtn(String s){
+			this.setText(s);
+		}
+		@Override
+		public void doAction() {
+		}
+	}
+	
+	public class DelItemBtn extends JButton implements EventAction{
+		
+		public DelItemBtn(String s){
+			this.setText(s);
+		}
+		@Override
+		public void doAction() {
+
+		}
+	}
 	
 	public class AddBtn extends JButton implements EventAction{
 		private int index;
@@ -472,7 +512,8 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		}
 		@Override
 		public void doAction() {
-			
+			BoxLabel bl = boxUI.get(index);
+			bl.setAmount(bl.getAmount()+1);
 		}
 		
 	}
@@ -485,7 +526,9 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		}
 		@Override
 		public void doAction() {
-			
+			BoxLabel bl = boxUI.get(index);
+			if(bl.getAmount()>0)
+				bl.setAmount(bl.getAmount()-1);
 		}
 		
 	}

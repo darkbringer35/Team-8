@@ -14,7 +14,7 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 	private JPanel[] backgroundPanel;  
 	private JPanel belowPanel[];
 	private JButton[] btnMenu;
-	private JButton[] btnCash;
+	private CashBtn[] btnCash;
 	private JButton[] pad;
 	private JButton[] btnTableEdit;
 	private Vector<TableBtn> table;
@@ -139,14 +139,18 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 			belowPanel[0].add(txfCash[i]);
 		}
 		
-		btnCash=new JButton[2];
-		btnCash[0] = new JButton("카드결제");
+		btnCash=new CashBtn[2];
+		btnCash[0] = new CashBtn("카드결제");
 		btnCash[0].setBounds(25,168, 125, 24);
-		belowPanel[0].add(btnCash[0]);
 		
-		btnCash[1] = new JButton("현금결제");
+		btnCash[1] = new CashBtn("현금결제");
 		btnCash[1].setBounds(200,168,125,24);
-		belowPanel[0].add(btnCash[1]);
+		
+		for(int i=0;i<2;i++) {
+			belowPanel[0].add(btnCash[i]);
+			btnCash[i].addActionListener(this);
+		}
+	
 		
 		//-----------------------------------------------------------------------------
 		//	#하부 패널2 숫자판 패널 설정
@@ -371,6 +375,16 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 			x=Integer.parseInt(txtCash[0].getText())-x;
 			txtCash[2].setText(""+(-x));	
 		}
+	}
+	public class CashBtn extends JButton implements EventAction{
+		public CashBtn (String s){
+			this.setText(s);
+		}
+		@Override
+		public void doAction() {
+			
+		}
+		
 	}
 	
 }
