@@ -1,16 +1,16 @@
 package jewan;
 
 
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-
 import javax.swing.*;
 import javax.swing.border.*;
 
 public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 상속받는다
 	
-	private JPanel backgroundPanel[];  
+	private JPanel[] backgroundPanel;  
 	private JPanel belowPanel[];
 	private JButton[] btnMenu;
 	private JButton[] btnCash;
@@ -23,9 +23,7 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 	
 	private JTextField[] txfCash;
 	
-	private int frameMode;
 	
-	private ImageIcon icon;
 //=====================================================================================
 //	#생성자
 //=====================================================================================	
@@ -39,14 +37,13 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		
 		table = new Vector<TableBtn>();
 		AppManager.getInstance().setTableArray(table);
-		frameMode=0;
 		
 		backgroundPanel = new JPanel[3];
-		for(int i=0; i<3;i++)
-			backgroundPanel[i] = new JPanel();
+		for(int i = 0;i < 3;i++) {
+			backgroundPanel[i]=new JPanel();
+		}
 		
-		icon = new ImageIcon("rc.png");
-		
+
 		//-----------------------------------------------------------------------------
 		//	#패널1 설정
 		//-----------------------------------------------------------------------------
@@ -79,16 +76,13 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		btnTableEdit= new JButton[2];
 		btnTableEdit[0] = new TableAdd("+");
 		btnTableEdit[0].setBounds(700,10, 45,35);
-		btnTableEdit[1] = new TableAdd("-");
+		btnTableEdit[1] = new TableDelete("-");
 		btnTableEdit[1].setBounds(750,10, 45,35);
 		for(int i=0;i<2;i++) {
 			backgroundPanel[1].add(btnTableEdit[i]);
 			btnTableEdit[i].setVisible(false);
 			btnTableEdit[i].addActionListener(this);
 		}
-		
-		
-		
 		
 		//-----------------------------------------------------------------------------
 		//	#패널3 설정
@@ -174,18 +168,41 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 	public JPanel getTabelPanel	() {
 		return backgroundPanel[1];
 	}
-	public int getFrameMode() {
-		return frameMode;
-	}
-	public void setFrameMode(int mode) {
-		frameMode=mode;
-	}
 	public JTextField[] getTxfCash() {
 		return txfCash;
 	}
 //=====================================================================================
 //	#함수
 //=====================================================================================	
+	public void allTableClean() {
+		backgroundPanel[1].setBackground(Color.white);
+		for(TableBtn tb : table){
+			tb.setBorderPainted(false);
+			tb.setForeground(Color.black);
+		}
+		if(AppManager.getInstance().getTid()!=-1){
+			TableBtn tb = table.get(AppManager.getInstance().getTid());
+			tb.setBorderPainted(true);
+			tb.setForeground(Color.red);
+		}
+	}
+	
+	public void tableArrayRefresh() {
+		int index = 0;
+		AppManager.getInstance().setTid(-1);
+		for(TableBtn tb : table){
+			tb.setIndex(index);
+			tb.setText("테이블"+index);
+			index++;
+		}
+	}
+	public void tableDeleteMode() {
+		int index = 0;
+		backgroundPanel[1].setBackground(Color.YELLOW);
+		for(TableBtn tb : AppManager.getInstance().getTableArray()){
+			tb.setBorderPainted(true);
+		}
+	}
 	
 //=====================================================================================
 //	#액션이벤트 핸들링 & 기타 클래스
@@ -220,19 +237,28 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 			this.setText(s);
 		}
 		public void doAction() {
-			if(frameMode == 0) {
-				frameMode=1;
+			if(AppManager.getInstance().getFrameMode() == 0) {
+				AppManager.getInstance().setFrameMode(1);
+				allTableClean();
 				for(int i=0;i<2;i++)
 					btnTableEdit[i].setVisible(true);
 				for(TableBtn tb : table)
 					tb.setEnabled(false);
 			}
-			else if(frameMode ==1) {
-				frameMode=0;
+			else if(AppManager.getInstance().getFrameMode() == 1) {
+				AppManager.getInstance().setFrameMode(0);
 				for(int i=0;i<2;i++)
 					btnTableEdit[i].setVisible(false);
 				for(TableBtn tb : table)
 					tb.setEnabled(true);
+			}
+			else if(AppManager.getInstance().getFrameMode() == 2) {
+				AppManager.getInstance().setFrameMode(0);
+				for(int i=0;i<2;i++)
+					btnTableEdit[i].setVisible(false);
+				for(TableBtn tb : table)
+					tb.setEnabled(true);
+				allTableClean();
 			}
 		}
 	}
@@ -252,8 +278,7 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		@Override
 		public void doAction() {
 			
-			if(table.size() < tableMax)
-			{
+			if(table.size() < tableMax){
 				TableBtn t = new TableBtn(table.size());
 				t.addActionListener(AppManager.getInstance().getChickenMain());
 				t.setEnabled(false);
@@ -271,7 +296,15 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 
 		@Override
 		public void doAction() {
-			
+			if(AppManager.getInstance().getFrameMode() != 2) {
+				AppManager.getInstance().setFrameMode(2);
+				tableDeleteMode();
+			}
+			else
+			{
+				AppManager.getInstance().setFrameMode(1);
+				allTableClean();
+			}
 		}
 	}
 	public class NumPadBtn extends JButton implements EventAction{
@@ -306,7 +339,6 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 			x=Integer.parseInt(txtCash[0].getText())-x;
 			txtCash[2].setText(""+(-x));	
 		}
-		
 	}
 	
 }
