@@ -21,6 +21,9 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 	private boolean timerOn = false;
 	private boolean blackRed = false;
 	
+	//사용될 테마 컬러들 정의
+	private Color color3 = new Color(255, 218, 175);
+	
 //=====================================================================================
 //	#생성자
 //=====================================================================================	
@@ -33,6 +36,7 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 		
 		this.updateUI();
 		
+		this.setBackground(color3);
 		this.setVisible(true);
 		this.setSize(100,100);
 		this.setLocation(100+index*10,100+index*10);

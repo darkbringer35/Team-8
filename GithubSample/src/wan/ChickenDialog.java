@@ -52,11 +52,13 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	private Color color3 = new Color(255, 218, 175);
 	
 	private ArrayList<DayList> datas;
+	private JTextField searchDayTX;
 	private JTextField searchTX;
 	private SalesChart salesChart;
 	private JFreeChart chart;
 	private JTextArea salesTA;
 	private SearchBtn btnSearch;
+	private ChartPanel gp;
 	
 //=====================================================================================
 //	#생성자
@@ -68,10 +70,22 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		this.setLocation(500,300);
 		this.setResizable(false);
 		
+		//환경설정패널에 이미지 삽입
+		ImageIcon optionIcon= new ImageIcon("optionImage0.png");
+		Image optionImg = optionIcon.getImage();
+		
 		//Dialog의 메뉴패널 밑에 붙일 각 메뉴 패널들 (카드레이아웃을 이용해 이 패널들 중 하나가 선택됨)
 		itemPanel = new JPanel(); //재고 관리 패널
 		salesPanel = new JPanel(); //매출 관리 패널
-		optionPanel = new JPanel(); //환경 설정 패널
+		optionPanel = new JPanel(){ //환경 설정 패널
+		@Override
+	    	public void paintComponent(Graphics g)
+			{
+				super.paintComponent(g);
+				g.drawImage(optionImg, 0, 0, this);
+			}
+		};
+		
 		tablePanel = new JPanel();
 		
 		//메뉴버튼에 모두 붙여야되는 메뉴바패널과 버튼들
@@ -79,6 +93,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		itemBtn = new MenuBtn("재고관리",1); 		//재고관리 버튼
 		salesBtn = new MenuBtn("매출관리",2); 		//매출관리 버튼
 		optionBtn = new MenuBtn("환경설정",3);	 	//환경설정 버튼
+		menuPanel.setBackground(Color.WHITE);
 		
 		
 		//액션리스너와 연동
@@ -129,6 +144,9 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	}
 	public JPanel getTableUI(){
 		return boxSpace;
+	}
+	public ChartPanel getGrapePanel() {
+		return gp;
 	}
 //=====================================================================================
 //	#함수
@@ -190,6 +208,8 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		else if(mode == 2) { // 2: 매출관리UI
 			//매출관리 버튼만 컬러 변경
 			salesBtn.setBackground(color2);
+			
+			totalTableData();
 			//카드 레이아웃으로 매출관리창으로 전환하기
 			setTitle("매출 관리");
 			this.setSize(875,525);
@@ -236,8 +256,6 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			}
 		}
 	}
-	
-
 
 	public void chickenTableData(int index) {	//1개의 치킨테이블에 대한 날짜,총판매량,총판매액 을 얻는 함수	
 		itemTA.append("\n날짜\t\t총판매량\t총판매액 \n");	//목록을 구분해주기 위하여 추가
@@ -255,20 +273,32 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	}
 	
 	public void totalTableData() {
-		//ta.setText("");		
-		//ta.append("날짜     판매량    가격  \n");	//목록을 구분해주기 위하여 추가
+		salesTA.setText("");		
+		salesTA.append("날짜\t\t총판매량\t총판매액\n");	//목록을 구분해주기 위하여 추가
 		datas=AppManager.getInstance().getDAOManger().getTotalTable();
 		if (datas != null) {			//저장된 데이터가 있는 경우
 			for (DayList d : datas) {	//데이터의 길이까지
 				StringBuffer sb = new StringBuffer();	//데이터를 저장할 버퍼생성
-				sb.append(d.getDay() + "           ");	
-				sb.append(d.getSales() + "             ");
+				sb.append(d.getDay() + "\t\t");	
+				sb.append(d.getSales() + "\t");
 				sb.append(d.getPrice() + "\n");
-			//	ta.append(sb.toString());		//하나의 문자열로 묶어서 추가한다.
+				salesTA.append(sb.toString());		//하나의 문자열로 묶어서 추가한다.
 				
 			}
 		}
 	}
+	
+	public void totalTableData(String day) {	
+		salesTA.setText("");		
+		salesTA.append("날짜\t\t총판매량\t총판매액\n");	//목록을 구분해주기 위하여 추가
+		DayList d = AppManager.getInstance().getDAOManger().getOneTotalTable(day);
+			StringBuffer sb = new StringBuffer();	//데이터를 저장할 버퍼생성
+			sb.append(d.getDay() + "\t\t");	
+			sb.append(d.getSales() + "\t");	
+			sb.append(d.getSales()*d.getPrice() + "\n");
+			salesTA.append(sb.toString());		//하나의 문자열로 묶어서 추가한다.			
+	}
+
 
 //=====================================================================================
 //	#UI구성 함수
@@ -279,147 +309,154 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		setTitle("재고 관리");
 		
 		//텍스트필드 패널 p1 구성
-				JPanel p1 = new JPanel();
-				//재고 목록 TextField 구성
-				itemTA = new JTextArea(23,40); //ta영역 생성
-				JScrollPane scroll = new JScrollPane(itemTA,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-				itemTA.setBackground(Color.white);
-				stockTableData();
+		JPanel p1 = new JPanel();
+		//재고 목록 TextField 구성
+		itemTA = new JTextArea(23,40); //ta영역 생성
+		JScrollPane scroll = new JScrollPane(itemTA,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		itemTA.setBackground(Color.white);
+		stockTableData();
 				
-				p1.setLayout(new BorderLayout());
-				p1.add(scroll, BorderLayout.CENTER);
-				p1.setBackground(Color.white);
+		p1.setLayout(new BorderLayout());
+		p1.add(scroll, BorderLayout.CENTER);
+		p1.setBackground(Color.white);
 			
-				//속성 입출력 패널 p2구성
-				JPanel p2 = new JPanel(); 	//p2패널 생성
-				p2.setLayout(null); 		//p2패널 레이아웃 없음
-				p2.setBackground(Color.white);
+		//속성 입출력 패널 p2구성
+		JPanel p2 = new JPanel(); 	//p2패널 생성
+		p2.setLayout(null); 		//p2패널 레이아웃 없음
+		p2.setBackground(Color.white);
 				
-				itemCB = new JComboBox(); //메뉴번호 콤보박스
-				itemCB.setBounds(120, 50, 230, 50);
-				p2.add(itemCB);
-				itemCB.addItemListener(new ItemListener() {
-
-					@Override
-					public void itemStateChanged(ItemEvent e) {
-						int index = itemCB.getSelectedIndex();
+		itemCB = new JComboBox(); //메뉴번호 콤보박스
+		itemCB.setBounds(120, 50, 230, 50);
+		p2.add(itemCB);
+		itemCB.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					int index = itemCB.getSelectedIndex();
 					
-						itemTXT[0].setText((String)itemCB.getSelectedItem());
-						itemTXT[1].setText(""+AppManager.getInstance().getDAOManger().getStock(index));
-						itemTXT[2].setText(""+AppManager.getInstance().getDAOManger().getPrice(index));
+					itemTXT[0].setText((String)itemCB.getSelectedItem());
+					itemTXT[1].setText(""+AppManager.getInstance().getDAOManger().getStock(index));
+					itemTXT[2].setText(""+AppManager.getInstance().getDAOManger().getPrice(index));
 						
-						if(index==0) {
-							stockTableData();
-						}
-						else {
-							stockTableData();
-							chickenTableData(index);
-						}
-						
+					if(index==0) {
+						stockTableData();
 					}
-					
-				});
-				
-				itemTXT = new JTextField[3];	//메뉴명,재고,가격 텍스트필드
-				for(int i=0;i<3;i++) {
-					itemTXT[i] = new JTextField();
-					itemTXT[i].setBounds(120,150+100*i,230,50);
-					p2.add(itemTXT[i]);
+					else {
+						stockTableData();
+						chickenTableData(index);
+					}
 				}
-				
-				JLabel[] lblItem = new JLabel[4];
-				lblItem[0] = new JLabel("메뉴번호");//메뉴번호 라벨
-				lblItem[1] = new JLabel("메뉴명");//메뉴명 라벨
-				lblItem[2] = new JLabel("재고");//재고 라벨
-				lblItem[3] = new JLabel("가격");//가격 라벨
-				for(int i =0; i < 4 ; i++) {
-					lblItem[i].setBounds(30, 50+100*i, 100, 50);
-					p2.add(lblItem[i]);
-				}
-				
-				//버튼 패널 p3 구성
-				JPanel p3 = new JPanel(); //p3패널 생성
-				p3.setLayout(new FlowLayout()); //p3패널 플로우 레이아웃
-				p3.setBackground(Color.white);
-				
-				JButton[] btnItem = new JButton[4]; 
-				btnItem[0] = new RegisterBtn("등록"); //등록 버튼
-				btnItem[1] = new EditBtn("수정"); //조회 버튼
-				btnItem[2] = new DelItemBtn("삭제"); //삭제 버튼
-				
-				for(int i = 0; i < 3; i++) {
-					p3.add(btnItem[i]);
-					btnItem[i].addActionListener(this);
-					btnItem[i].setBackground(color1);
-				}
-				
-				//item Panel 레이아웃 설정 및 부속 패널들 붙이기
-				itemPanel.setLayout(new BorderLayout());
-				itemPanel.add(p1, BorderLayout.LINE_END); //scroll패널 오른쪽
-				itemPanel.add(p2, BorderLayout.CENTER); //p2패널 중간
-				itemPanel.add(p3, BorderLayout.PAGE_END); //p3패널 맨아래
 			
-				//dialog 레이아웃 및 위젯 설정
-				this.add(menuTab,BorderLayout.PAGE_START);
-				//this.add(menuPanel,BorderLayout.PAGE_START);
-				this.add(tab, BorderLayout.CENTER);
+			});
+				
+			itemTXT = new JTextField[3];	//메뉴명,재고,가격 텍스트필드
+			for(int i=0;i<3;i++) {
+				itemTXT[i] = new JTextField();
+				itemTXT[i].setBounds(120,150+100*i,230,50);
+				p2.add(itemTXT[i]);
+			}
+				
+			JLabel[] lblItem = new JLabel[4];
+			lblItem[0] = new JLabel("메뉴번호");//메뉴번호 라벨
+			lblItem[1] = new JLabel("메뉴명");//메뉴명 라벨
+			lblItem[2] = new JLabel("재고");//재고 라벨
+			lblItem[3] = new JLabel("가격");//가격 라벨
+			for(int i =0; i < 4 ; i++) {
+				lblItem[i].setBounds(30, 50+100*i, 100, 50);
+				p2.add(lblItem[i]);
+			}
+			p2.setBackground(Color.white);
+			
+			//버튼 패널 p3 구성
+			JPanel p3 = new JPanel(); //p3패널 생성
+			p3.setLayout(new FlowLayout()); //p3패널 플로우 레이아웃
+			p3.setBackground(Color.white);
+				
+			JButton[] btnItem = new JButton[4]; 
+			btnItem[0] = new RegisterBtn("등록"); //등록 버튼
+			btnItem[1] = new EditBtn("수정"); //조회 버튼
+			btnItem[2] = new DelItemBtn("삭제"); //삭제 버튼
+				
+			for(int i = 0; i < 3; i++) {
+				p3.add(btnItem[i]);
+				btnItem[i].addActionListener(this);
+				btnItem[i].setBackground(color1);
+			}
+				
+			//item Panel 레이아웃 설정 및 부속 패널들 붙이기
+			itemPanel.setLayout(new BorderLayout());
+			itemPanel.add(p1, BorderLayout.LINE_END); //scroll패널 오른쪽
+			itemPanel.add(p2, BorderLayout.CENTER); //p2패널 중간
+			itemPanel.add(p3, BorderLayout.PAGE_END); //p3패널 맨아래
+			
+			//dialog 레이아웃 및 위젯 설정
+			this.add(menuTab,BorderLayout.PAGE_START);
+			//this.add(menuPanel,BorderLayout.PAGE_START);
+			this.add(tab, BorderLayout.CENTER);
 		
 	}
 	
 	//매출 관리창 UI
 	public void salesManagerUI(){
 		//창 제목
-				setTitle("매출 관리");
+		setTitle("매출 관리");
 				
-				//날짜 검색 패널 p1 생성
-				JPanel p1 = new JPanel();
-				JLabel lb = new JLabel("날짜 검색: ");
-				searchTX = new JTextField(15);
-				SearchBtn btnSearch = new SearchBtn("검색");
+		//날짜 검색 패널 p1 생성
+		JPanel p1 = new JPanel();
+		JLabel lb1 = new JLabel("검색 일 수: ");
+		JLabel lb2 = new JLabel("날짜 검색: ");
+		searchDayTX = new JTextField(3);
+		searchTX = new JTextField(15);
+		SearchBtn btnSearch = new SearchBtn("검색");
+		btnSearch.addActionListener(this);
 				
-				//p1레이아웃
-				p1.setLayout(new FlowLayout());
-				p1.add(lb);
-				p1.add(searchTX);
-				p1.add(btnSearch);
+		//p1레이아웃
+		p1.setLayout(new FlowLayout());
+		p1.add(lb1);
+		p1.add(searchDayTX);
+		p1.add(lb2);
+		p1.add(searchTX);
+		p1.add(btnSearch);
 				
-				//p1패널 배경색상 화이트로 설정
-				p1.setBackground(Color.white);
-				//검색버튼 색상 color1로 변경
-				btnSearch.setBackground(color1);
+		//p1패널 배경색상 화이트로 설정
+		p1.setBackground(Color.white);
+		//검색버튼 색상 color1로 변경
+		btnSearch.setBackground(color1);
 				
-				//그래프와 매출차트가 붙어있는 p2패널 생성
-				JPanel p2 = new JPanel();
+		//그래프와 매출차트가 붙어있는 p2패널 생성
+		JPanel p2 = new JPanel();
 				
-				//매출 차트 생성
-				//SalesChart 객체 생성
-		    	salesChart = new SalesChart();
-		    	//JFeeChart 객체 생성
-		    	chart = salesChart.getChart();
-				//매출차트 붙일 차트패널 생성
-				ChartPanel gp = new ChartPanel(chart);
+		//매출 차트 생성
+		//SalesChart 객체 생성
+		salesChart = new SalesChart();
+		//JFeeChart 객체 생성
+		chart = salesChart.getChart(5,"2018-1-1");
+		//매출차트 붙일 차트패널 생성
+		gp = new ChartPanel(chart);
 				
-				//매출 목록 list패널 생성
-				JPanel list = new JPanel();
-				salesTA = new JTextArea(20,35); //ta영역 생성
-				JScrollPane scroll = new JScrollPane(salesTA,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		//매출 목록 list패널 생성
+		JPanel list = new JPanel();
+		salesTA = new JTextArea(20,35); //ta영역 생성
+		JScrollPane scroll = new JScrollPane(salesTA,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		list.add(scroll);
 				
-				list.add(scroll);
+		//p2레이아웃
+		p2.setLayout(new GridLayout(1,2)); //그리드 레이아웃 설정
+		p2.add(gp);
+		p2.add(list);
+		
+		//p2패널 배경색상 화이트로 설정
+		chart.setBackgroundPaint(Color.WHITE);
+		list.setBackground(Color.white);
+		
+		//salesPanel에 부속 패널 붙이기
+		salesPanel.setLayout(new BorderLayout());
+		salesPanel.add(p1,BorderLayout.PAGE_START);
+		salesPanel.add(p2,BorderLayout.CENTER);
 				
-				//p2레이아웃
-				p2.setLayout(new GridLayout(1,2)); //그리드 레이아웃 설정
-				p2.add(gp);
-				p2.add(list);
-				
-				//salesPanel에 부속 패널 붙이기
-				salesPanel.setLayout(new BorderLayout());
-				salesPanel.add(p1,BorderLayout.PAGE_START);
-				salesPanel.add(p2,BorderLayout.CENTER);
-				
-				//dialog 레이아웃 및 위젯 설정
-				this.add(menuTab,BorderLayout.PAGE_START);
-				//this.add(menuPanel,BorderLayout.PAGE_START);
-				this.add(tab, BorderLayout.CENTER);
+		//dialog 레이아웃 및 위젯 설정
+		this.add(menuTab,BorderLayout.PAGE_START);
+		//this.add(menuPanel,BorderLayout.PAGE_START);
+		this.add(tab, BorderLayout.CENTER);
 		
 		
 	}
@@ -441,9 +478,10 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		btnOption.setBounds(320,350,210,50);
 		
 		//환경설정패널 색상 화이트로 설정
-		optionPanel.setBackground(Color.white);
+		//optionPanel.setBackground(Color.white);
 		//확인 버튼 색상 color1로 설정
 		btnOption.setBackground(color1);
+		txfOption.setBackground(Color.white);
 				
 		optionPanel.add(lblOption);
 		optionPanel.add(txfOption);
@@ -701,6 +739,9 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		}
 		@Override
 		public void doAction() {
+			totalTableData(searchTX.getText());
+			chart = salesChart.getChart(Integer.parseInt(searchDayTX.getText()),searchTX.getText());
+			AppManager.getInstance().getChickenDialog().getGrapePanel().updateUI();
 		}
 	}
 	

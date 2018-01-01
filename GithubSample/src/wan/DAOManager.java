@@ -164,7 +164,7 @@ public class DAOManager {
 			rs = pstmt.executeQuery();			
 			d.setDay(rs.getString("day"));
 			d.setSales(rs.getInt("totalsales"));
-			d.setStock(rs.getInt("totalprice"));
+			d.setPrice(rs.getInt("totalprice"));
 	
 		} catch (Exception e) {
 		}
@@ -238,7 +238,6 @@ public class DAOManager {
 				rs=pstmt.executeQuery();
 				if(rs.next()==true) {
 				cSales = rs.getInt("sales");
-				System.out.println(""+rs.getInt("sales"));
 				}
 				else { cSales = 0; }
 				
@@ -543,6 +542,7 @@ public class DAOManager {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, str);
 			rs = pstmt.executeQuery();
+			rs.next();
 			day = rs.getString("day");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -562,7 +562,8 @@ public class DAOManager {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, str);
 			rs = pstmt.executeQuery();
-			price = rs.getInt("totallist");
+			rs.next();
+			price = rs.getInt("totalprice");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
