@@ -467,13 +467,13 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		setTitle("환경 설정");
 
 		//라벨 텍스트필드 버튼 생성
-		JLabel lblOption = new JLabel("배달 제한 시간을 설정해주세요."); 
+		//JLabel lblOption = new JLabel("배달 제한 시간을 설정해주세요."); 
 		txfOption = new JTextField();
 		JButton btnOption = new JButton("확인");
 		
 		//위젯 설정
 		optionPanel.setLayout(null);
-		lblOption.setBounds(340,150,300,50);
+		//lblOption.setBounds(340,150,300,50);
 		txfOption.setBounds(240,250,375,50);
 		btnOption.setBounds(320,350,210,50);
 		
@@ -483,7 +483,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		btnOption.setBackground(color1);
 		txfOption.setBackground(Color.white);
 				
-		optionPanel.add(lblOption);
+		//optionPanel.add(lblOption);
 		optionPanel.add(txfOption);
 		optionPanel.add(btnOption);
 		
