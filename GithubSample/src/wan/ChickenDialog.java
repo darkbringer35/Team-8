@@ -3,6 +3,7 @@ package wan;
 
 
 
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -47,6 +48,11 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	private JComboBox itemCB;
 	private JTextField[] itemTXT;
 	
+	//사용될 테마 컬러들 정의
+	private Color color1 = new Color(255, 218, 175);
+	private Color color2 = new Color(255, 144, 0);
+	private Color color3 = new Color(255, 218, 175);
+	
 	//생성자
 	public ChickenDialog() {
 		AppManager.getInstance().setChickenDialog(this);
@@ -66,6 +72,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		itemBtn = new MenuBtn("재고관리",1); 		//재고관리 버튼
 		salesBtn = new MenuBtn("매출관리",2); 		//매출관리 버튼
 		optionBtn = new MenuBtn("환경설정",3);	 	//환경설정 버튼
+		
 		
 		//액션리스너와 연동
 		itemBtn.addActionListener(this);
@@ -121,7 +128,6 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	//테이블UI용
 	public void refreshTable(int index) {
 		
-		
 		for(int i = boxUI.size(); i>0 ;i--)
 			receiptBtn[3].doClick();
 		
@@ -148,7 +154,14 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	}
 	
 	public void refreshUI() {
+		//메뉴 버튼들 기본 색상 설정
+		itemBtn.setBackground(color1);
+		salesBtn.setBackground(color1);
+		optionBtn.setBackground(color1);
+		
 		if(mode==1){ // 1: 재고관리UI
+			//재고관리 버튼만 컬러 번경
+			itemBtn.setBackground(color2);
 			//카드 레이아웃으로 재고관리 창 전환
 			setTitle("재고 관리");
 			this.setSize(875,525);
@@ -156,6 +169,8 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			this.cardLayout.show(this.tab,"item");
 		}
 		else if(mode == 2) { // 2: 매출관리UI
+			//매출관리 버튼만 컬러 변경
+			salesBtn.setBackground(color2);
 			//카드 레이아웃으로 매출관리창으로 전환하기
 			setTitle("매출 관리");
 			this.setSize(875,525);
@@ -163,6 +178,8 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			this.cardLayout.show(this.tab,"sales");
 		}
 		else if(mode == 3) { // 3: 환결성정UI
+			//환경설정 버튼만 컬러 변경
+			optionBtn.setBackground(color2);
 			//카드 레이아웃으로 환경설정창으로 전환하기
 			setTitle("환경 설정");
 			this.setSize(875,525);
@@ -203,10 +220,12 @@ public class ChickenDialog extends JDialog implements ActionListener{
 				
 				p1.setLayout(new BorderLayout());
 				p1.add(scroll, BorderLayout.CENTER);
+				p1.setBackground(Color.white);
 			
 				//속성 입출력 패널 p2구성
 				JPanel p2 = new JPanel(); 	//p2패널 생성
 				p2.setLayout(null); 		//p2패널 레이아웃 없음
+				p2.setBackground(Color.white);
 				
 				itemCB = new JComboBox(); //메뉴번호 콤보박스
 				itemCB.setBounds(120, 50, 230, 50);
@@ -232,6 +251,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 				//버튼 패널 p3 구성
 				JPanel p3 = new JPanel(); //p3패널 생성
 				p3.setLayout(new FlowLayout()); //p3패널 플로우 레이아웃
+				p3.setBackground(Color.white);
 				
 				JButton[] btnItem = new JButton[3]; 
 				btnItem[0] = new RegisterBtn("등록"); //등록 버튼
@@ -241,10 +261,9 @@ public class ChickenDialog extends JDialog implements ActionListener{
 				for(int i = 0; i < 3; i++) {
 					p3.add(btnItem[i]);
 					btnItem[i].addActionListener(this);
+					btnItem[i].setBackground(color1);
 				}
 				
-				
-
 				//item Panel 레이아웃 설정 및 부속 패널들 붙이기
 				itemPanel.setLayout(new BorderLayout());
 				itemPanel.add(p2, BorderLayout.CENTER); //p2패널 중간
@@ -274,6 +293,11 @@ public class ChickenDialog extends JDialog implements ActionListener{
 				p1.add(lb);
 				p1.add(tf);
 				p1.add(btn);
+				
+				//p1패널 배경색상 화이트로 설정
+				p1.setBackground(Color.white);
+				//검색버튼 색상 color1로 변경
+				btn.setBackground(color1);
 				
 				//그래프와 매출차트가 붙어있는 p2패널 생성
 				JPanel p2 = new JPanel();
@@ -326,6 +350,11 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		lblOption.setBounds(340,150,300,50);
 		txfOption.setBounds(240,250,375,50);
 		btnOption.setBounds(320,350,210,50);
+		
+		//환경설정패널 색상 화이트로 설정
+		optionPanel.setBackground(Color.white);
+		//확인 버튼 색상 color1로 설정
+		btnOption.setBackground(color1);
 				
 		optionPanel.add(lblOption);
 		optionPanel.add(txfOption);
@@ -382,10 +411,13 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		
 		JPanel btnSpace =new JPanel();
 		btnSpace.setSize(400,50);
+		menuTab.setBackground(color1);
+		btnSpace.setBackground(color1);
 		
 		for(int i=0;i<5;i++) {
 			btnSpace.add(receiptBtn[i]); 
 			receiptBtn[i].addActionListener(this);
+			receiptBtn[i].setBackground(color2);
 		}
 		
 		JLabel lblColumn = new JLabel("	인덱스                          품목명                                             갯수                          가격");
@@ -394,8 +426,10 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		
 		JPanel pricePanel = new JPanel();
 		pricePanel.setSize(400,50);
+		pricePanel.setBackground(color1);
 		
 		JLabel lblPrice = new JLabel("총 가격");
+		lblPrice.setBackground(color1);
 		
 		tfTotalPrice = new JTextField(6);
 		tfTotalPrice.setText("0");

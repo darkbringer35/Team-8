@@ -2,6 +2,7 @@ package wan;
 
 
 
+
 public class DayList {
 	
 	String day;

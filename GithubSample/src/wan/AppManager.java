@@ -1,6 +1,7 @@
 package wan;
 
 
+
 import java.util.*;
 
 public class AppManager {

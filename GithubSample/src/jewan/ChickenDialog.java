@@ -49,9 +49,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	private JTextField txfOption;
 	
 	//사용될 테마 컬러들 정의
-	private Color color1 = new Color(255, 218, 175);
-	private Color color2 = new Color(255, 144, 0);
-	private Color color3 = new Color(255, 218, 175);
+
 	
 	//생성자
 	public ChickenDialog() {
@@ -133,13 +131,9 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	
 	public void refreshUI() {
 		//메뉴 버튼들 기본 색상 설정
-		itemBtn.setBackground(color1);
-		salesBtn.setBackground(color1);
-		optionBtn.setBackground(color1);
+		
 		
 		if(mode==1){ // 1: 재고관리UI
-			//재고관리 버튼만 컬러 번경
-			itemBtn.setBackground(color2);
 			//카드 레이아웃으로 재고관리 창 전환
 			setTitle("재고 관리");
 			this.setSize(875,525);
@@ -147,8 +141,6 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			this.cardLayout.show(this.tab,"item");
 		}
 		else if(mode == 2) { // 2: 매출관리UI
-			//매출관리 버튼만 컬러 변경
-			salesBtn.setBackground(color2);
 			//카드 레이아웃으로 매출관리창으로 전환하기
 			setTitle("매출 관리");
 			this.setSize(875,525);
@@ -156,8 +148,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			this.cardLayout.show(this.tab,"sales");
 		}
 		else if(mode == 3) { // 3: 환결성정UI
-			//환경설정 버튼만 컬러 변경
-			optionBtn.setBackground(color2);
+			
 			//카드 레이아웃으로 환경설정창으로 전환하기
 			setTitle("환경 설정");
 			this.setSize(875,525);
@@ -231,9 +222,6 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		p3.add(b3);
 		//버튼 컬러 예쁘게 변경
 		p3.setBackground(Color.white);
-		b1.setBackground(color1); 
-		b2.setBackground(color1);
-		b3.setBackground(color1);
 
 		//item Panel 레이아웃 설정 및 부속 패널들 붙이기
 		itemPanel.setLayout(new BorderLayout());
@@ -281,10 +269,6 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		p1.add(lb);
 		p1.add(tf);
 		p1.add(btn);
-		//p1패널 배경색상 화이트로 설정
-		p1.setBackground(Color.white);
-		//검색버튼 색상 color1로 변경
-		btn.setBackground(color1);
 		
 		//그래프와 매출차트가 붙어있는 p2패널 생성
 		JPanel p2 = new JPanel();

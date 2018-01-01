@@ -2,6 +2,7 @@ package wan;
 
 
 
+
 public class ReceiptItem {
 	int itemIndex;
 	int itemAmount;
