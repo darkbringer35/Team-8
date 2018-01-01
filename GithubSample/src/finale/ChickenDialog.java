@@ -607,9 +607,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			this.setBounds(2,1+(index+1)*30,450,25);
 			this.setLayout(null);
 			
-			String[] str = new String[10];
-			
-			menu= new JComboBox(str);
+			menu= new JComboBox();
 			addBtn = new AddBtn("+",index);
 			minusBtn = new MinusBtn("-",index);
 			amount = new JTextField(5);
@@ -853,6 +851,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 				AppManager.getInstance().getChickenDialog().getTableUI().add(bp);
 				
 				refreshComboBox();
+				bp.selectBox(0);
 				
 				bp.updateUI();
 				
