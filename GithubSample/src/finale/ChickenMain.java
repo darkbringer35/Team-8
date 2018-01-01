@@ -431,6 +431,8 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame¿ª 
 				tb.timerOff();
 				for(int i = 0; i<3;i++)
 					txtCash[i].setText("0");
+				AppManager.getInstance().setTid(-1);
+				allTableClean();
 			}
 		}
 		
