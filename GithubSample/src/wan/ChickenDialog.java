@@ -1,9 +1,6 @@
 package wan;
 
 
-
-
-
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -32,7 +29,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	private JPanel itemPanel;	 	//재고 관리 패널
 	private JPanel salesPanel;	 	//매출 관리 패널
 	private JPanel optionPanel;		//환경 설정 패널
-	/*테이블 UI*/JPanel tablePanel;
+	private JPanel tablePanel;
 	
 	//테이블UI용
 	private JPanel boxSpace;
@@ -47,13 +44,23 @@ public class ChickenDialog extends JDialog implements ActionListener{
 	
 	private JComboBox itemCB;
 	private JTextField[] itemTXT;
+	private JTextArea itemTA;
 	
 	//사용될 테마 컬러들 정의
 	private Color color1 = new Color(255, 218, 175);
 	private Color color2 = new Color(255, 144, 0);
 	private Color color3 = new Color(255, 218, 175);
 	
-	//생성자
+	private ArrayList<DayList> datas;
+	private JTextField searchTX;
+	private SalesChart salesChart;
+	private JFreeChart chart;
+	private JTextArea salesTA;
+	private SearchBtn btnSearch;
+	
+//=====================================================================================
+//	#생성자
+//=====================================================================================	
 	public ChickenDialog() {
 		AppManager.getInstance().setChickenDialog(this);
 		
@@ -109,6 +116,8 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		OptionUI();
 		TableUI();
 		
+		refreshComboBox();
+		
 	}
 
 //=====================================================================================
@@ -124,7 +133,15 @@ public class ChickenDialog extends JDialog implements ActionListener{
 //=====================================================================================
 //	#함수
 //=====================================================================================	
-		
+	public void refreshComboBox() {
+		int index=itemCB.getSelectedIndex();
+		itemCB.setModel(new DefaultComboBoxModel(AppManager.getInstance().getDAOManger().getComboIndex()));
+		itemCB.setSelectedIndex(index);
+		for(BoxLabel bl:boxUI) {
+			bl.getMenuBox().setModel(new DefaultComboBoxModel(AppManager.getInstance().getDAOManger().getComboIndex()));
+		}
+	}
+	
 	//테이블UI용
 	public void refreshTable(int index) {
 		
@@ -164,6 +181,8 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			itemBtn.setBackground(color2);
 			//카드 레이아웃으로 재고관리 창 전환
 			setTitle("재고 관리");
+			itemCB.setSelectedIndex(0);
+			stockTableData();
 			this.setSize(875,525);
 			this.cardLayout2.show(this.menuTab,"menu");
 			this.cardLayout.show(this.tab,"item");
@@ -201,6 +220,55 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		Date d =new Date();
 		return (d.getYear()+1900)+"-"+(d.getMonth()+1)+"-"+d.getDate();
 	}
+	
+	public void stockTableData() {	
+		itemTA.setText("");		
+		itemTA.append("이름\t\t판매량\t재고\t가격\n");	//목록을 구분해주기 위하여 추가
+		datas=AppManager.getInstance().getDAOManger().getStockTable();
+		if (datas != null) {			//저장된 데이터가 있는 경우
+			for (DayList d : datas) {	//데이터의 길이까지
+				StringBuffer sb = new StringBuffer();	//데이터를 저장할 버퍼생성
+				sb.append(d.getName() + "\t\t");	
+				sb.append(d.getSales() + "\t");
+				sb.append(d.getStock() + "\t");
+				sb.append(d.getPrice() + "\n");
+				itemTA.append(sb.toString());		//하나의 문자열로 묶어서 추가한다.
+			}
+		}
+	}
+	
+
+
+	public void chickenTableData(int index) {	//1개의 치킨테이블에 대한 날짜,총판매량,총판매액 을 얻는 함수	
+		itemTA.append("\n날짜\t\t총판매량\t총판매액 \n");	//목록을 구분해주기 위하여 추가
+		datas=AppManager.getInstance().getDAOManger().getChickenTable(index);
+		if (datas != null) {			//저장된 데이터가 있는 경우
+			for (DayList d : datas) {	//데이터의 길이까지
+				StringBuffer sb = new StringBuffer();	//데이터를 저장할 버퍼생성
+				sb.append(d.getDay() + "\t\t");	
+				sb.append(d.getSales() + "\t");	
+				sb.append(d.getSales()*d.getPrice() + "\n");
+				
+				itemTA.append(sb.toString());		//하나의 문자열로 묶어서 추가한다.
+			}
+		}
+	}
+	
+	public void totalTableData() {
+		//ta.setText("");		
+		//ta.append("날짜     판매량    가격  \n");	//목록을 구분해주기 위하여 추가
+		datas=AppManager.getInstance().getDAOManger().getTotalTable();
+		if (datas != null) {			//저장된 데이터가 있는 경우
+			for (DayList d : datas) {	//데이터의 길이까지
+				StringBuffer sb = new StringBuffer();	//데이터를 저장할 버퍼생성
+				sb.append(d.getDay() + "           ");	
+				sb.append(d.getSales() + "             ");
+				sb.append(d.getPrice() + "\n");
+			//	ta.append(sb.toString());		//하나의 문자열로 묶어서 추가한다.
+				
+			}
+		}
+	}
 
 //=====================================================================================
 //	#UI구성 함수
@@ -213,10 +281,10 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		//텍스트필드 패널 p1 구성
 				JPanel p1 = new JPanel();
 				//재고 목록 TextField 구성
-				JTextArea ta = new JTextArea(23,40); //ta영역 생성
-				JScrollPane scroll = new JScrollPane(ta,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-				ta.append("메뉴번호\t메뉴명\t\t재고\t가격\n"); //ta에 나타낼 항목들
-				ta.setBackground(Color.white);
+				itemTA = new JTextArea(23,40); //ta영역 생성
+				JScrollPane scroll = new JScrollPane(itemTA,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+				itemTA.setBackground(Color.white);
+				stockTableData();
 				
 				p1.setLayout(new BorderLayout());
 				p1.add(scroll, BorderLayout.CENTER);
@@ -230,6 +298,27 @@ public class ChickenDialog extends JDialog implements ActionListener{
 				itemCB = new JComboBox(); //메뉴번호 콤보박스
 				itemCB.setBounds(120, 50, 230, 50);
 				p2.add(itemCB);
+				itemCB.addItemListener(new ItemListener() {
+
+					@Override
+					public void itemStateChanged(ItemEvent e) {
+						int index = itemCB.getSelectedIndex();
+					
+						itemTXT[0].setText((String)itemCB.getSelectedItem());
+						itemTXT[1].setText(""+AppManager.getInstance().getDAOManger().getStock(index));
+						itemTXT[2].setText(""+AppManager.getInstance().getDAOManger().getPrice(index));
+						
+						if(index==0) {
+							stockTableData();
+						}
+						else {
+							stockTableData();
+							chickenTableData(index);
+						}
+						
+					}
+					
+				});
 				
 				itemTXT = new JTextField[3];	//메뉴명,재고,가격 텍스트필드
 				for(int i=0;i<3;i++) {
@@ -253,9 +342,9 @@ public class ChickenDialog extends JDialog implements ActionListener{
 				p3.setLayout(new FlowLayout()); //p3패널 플로우 레이아웃
 				p3.setBackground(Color.white);
 				
-				JButton[] btnItem = new JButton[3]; 
+				JButton[] btnItem = new JButton[4]; 
 				btnItem[0] = new RegisterBtn("등록"); //등록 버튼
-				btnItem[1] = new InquiryBtn("조회"); //조회 버튼
+				btnItem[1] = new EditBtn("수정"); //조회 버튼
 				btnItem[2] = new DelItemBtn("삭제"); //삭제 버튼
 				
 				for(int i = 0; i < 3; i++) {
@@ -266,9 +355,9 @@ public class ChickenDialog extends JDialog implements ActionListener{
 				
 				//item Panel 레이아웃 설정 및 부속 패널들 붙이기
 				itemPanel.setLayout(new BorderLayout());
+				itemPanel.add(p1, BorderLayout.LINE_END); //scroll패널 오른쪽
 				itemPanel.add(p2, BorderLayout.CENTER); //p2패널 중간
 				itemPanel.add(p3, BorderLayout.PAGE_END); //p3패널 맨아래
-				itemPanel.add(p1, BorderLayout.LINE_END); //scroll패널 오른쪽
 			
 				//dialog 레이아웃 및 위젯 설정
 				this.add(menuTab,BorderLayout.PAGE_START);
@@ -285,36 +374,36 @@ public class ChickenDialog extends JDialog implements ActionListener{
 				//날짜 검색 패널 p1 생성
 				JPanel p1 = new JPanel();
 				JLabel lb = new JLabel("날짜 검색: ");
-				JTextField tf = new JTextField(15);
-				JButton btn = new JButton("검색");
+				searchTX = new JTextField(15);
+				SearchBtn btnSearch = new SearchBtn("검색");
 				
 				//p1레이아웃
 				p1.setLayout(new FlowLayout());
 				p1.add(lb);
-				p1.add(tf);
-				p1.add(btn);
+				p1.add(searchTX);
+				p1.add(btnSearch);
 				
 				//p1패널 배경색상 화이트로 설정
 				p1.setBackground(Color.white);
 				//검색버튼 색상 color1로 변경
-				btn.setBackground(color1);
+				btnSearch.setBackground(color1);
 				
 				//그래프와 매출차트가 붙어있는 p2패널 생성
 				JPanel p2 = new JPanel();
 				
 				//매출 차트 생성
 				//SalesChart 객체 생성
-		    	SalesChart salesChart = new SalesChart();
+		    	salesChart = new SalesChart();
 		    	//JFeeChart 객체 생성
-		    	JFreeChart chart = salesChart.getChart();
+		    	chart = salesChart.getChart();
 				//매출차트 붙일 차트패널 생성
 				ChartPanel gp = new ChartPanel(chart);
 				
 				//매출 목록 list패널 생성
 				JPanel list = new JPanel();
-				JTextArea ta = new JTextArea(20,35); //ta영역 생성
-				JScrollPane scroll = new JScrollPane(ta,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-				ta.append("날짜\t매출액\t\t판매량\n"); //ta에 나타낼 항목들
+				salesTA = new JTextArea(20,35); //ta영역 생성
+				JScrollPane scroll = new JScrollPane(salesTA,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+				
 				list.add(scroll);
 				
 				//p2레이아웃
@@ -501,7 +590,6 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			lblIndex = new JLabel("#"+index);
 			lblIndex.setHorizontalAlignment(JLabel.CENTER);
 			
-			menu.setModel(new DefaultComboBoxModel(AppManager.getInstance().getDAOManger().getComboIndex()));
 			menu.addItemListener(new ItemListener() {
 
 				@Override
@@ -540,6 +628,9 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		public int getPrice() {
 			return Integer.parseInt(price.getText());
 		}
+		public JComboBox getMenuBox() {
+			return menu;
+		}
 		public int getSelectedBox(){
 			return menu.getSelectedIndex();
 		}
@@ -562,6 +653,7 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		@Override
 		public void doAction() {
 			AppManager.getInstance().getDAOManger().addMenu(itemTXT[0].getText());
+			AppManager.getInstance().getChickenDialog().refreshComboBox();
 			
 			AppManager.getInstance().getDAOManger().insertList(
 					AppManager.getInstance().getDAOManger().getKey()
@@ -573,13 +665,21 @@ public class ChickenDialog extends JDialog implements ActionListener{
 			
 		}
 	}
-	public class InquiryBtn extends JButton implements EventAction{
-		
-		public InquiryBtn(String s){
+	public class EditBtn extends JButton implements EventAction{
+		public EditBtn(String s){
 			this.setText(s);
 		}
 		@Override
 		public void doAction() {
+			
+			AppManager.getInstance().getDAOManger().chickenUpdate(
+					itemCB.getSelectedIndex()
+					, itemTXT[0].getText()
+					, Integer.parseInt(itemTXT[1].getText())
+					, Integer.parseInt(itemTXT[2].getText())
+					);
+			AppManager.getInstance().getChickenDialog().refreshComboBox();
+			
 		}
 	}
 	
@@ -590,7 +690,17 @@ public class ChickenDialog extends JDialog implements ActionListener{
 		}
 		@Override
 		public void doAction() {
-
+			AppManager.getInstance().getDAOManger().delMenu(itemCB.getSelectedIndex());
+			AppManager.getInstance().getChickenDialog().refreshComboBox();
+		}
+	}
+	public class SearchBtn extends JButton implements EventAction{
+		
+		public SearchBtn(String s){
+			this.setText(s);
+		}
+		@Override
+		public void doAction() {
 		}
 	}
 	

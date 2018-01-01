@@ -137,8 +137,7 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent e) { }
-
+	public void mouseEntered(MouseEvent e) {}
 	@Override
 	public void mouseExited(MouseEvent e) {}
 

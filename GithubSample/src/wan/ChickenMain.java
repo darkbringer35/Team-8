@@ -383,6 +383,8 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame¿ª 
 		}
 		@Override
 		public void doAction() {
+			JTextField[] txtCash=AppManager.getInstance().getChickenMain().getTxfCash();
+			//if(txtCash[])
 			TableBtn tb = table.get(AppManager.getInstance().getTid());
 			AppManager.getInstance().getDAOManger().updatePay(tb.getTInfo(), AppManager.getInstance().getChickenDialog().getToday());
 			tb.setBoxNum(0);

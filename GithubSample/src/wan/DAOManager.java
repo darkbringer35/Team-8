@@ -1,8 +1,5 @@
 package wan;
 
-
-
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -33,7 +30,7 @@ public class DAOManager {
 		try {
 
 			Class.forName(jdbcDriver); // jdbc드라이버 로딩
-			conn = DriverManager.getConnection(jdbcUrl, "root", "0305"); // DB경로, 사용자id,p/w를 통하여 연결하는 변수 생성
+			conn = DriverManager.getConnection(jdbcUrl, "javabook", "0305"); // DB경로, 사용자id,p/w를 통하여 연결하는 변수 생성
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -80,33 +77,60 @@ public class DAOManager {
 		}
 	}
 
-	
-	public boolean delMenu(int selected) {
-		sql = "delete from menulist where mainkey = ?";
+	public boolean delMenu(int index) {
+
 		int result = 0;
+		int key = getKey();
+
 		try {
-			connectDB(); // DB에 연걸
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, selected);
-			pstmt.executeUpdate();
-			
-			sql = "drop table chicken"+selected;
+			connectDB();
+			if (index != key) {
+				for (int i = index; i < key; i++) {
+					sql = "select cname from menulist where mainkey = ?";
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setInt(1, i + 1);
+					rs = pstmt.executeQuery();
+					rs.next();
+					String cName = rs.getString("cname"); // 삭제될 인덱스+1 부터 마지막인덱스까지 -1칸씩 앞으로 당겨온다
+
+					sql = "update menulist set cname = ? where mainkey = ?";
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setString(1, cName);
+					pstmt.setInt(2, i);
+					pstmt.executeUpdate();
+
+				}
+			}
+
+			sql = "drop table chicken" + index;
 			pstmt = conn.prepareStatement(sql);
 			result = pstmt.executeUpdate();
+
+			if (index != key) {
+				for (int i = index; i < key; i++) {
+
+					sql = "alter table chicken" + (i + 1) + " rename chicken" + i;
+					pstmt = conn.prepareStatement(sql);
+					pstmt.executeUpdate();
+				}
+			}
 			
+			sql = "delete from menulist where mainkey = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, key);
+			pstmt.executeUpdate();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		closeDB(); // DB연결을 끊는다
-		if (result > 0) {
+
+		closeDB();
+		if (result > 0) {// 결과값이 0보다 크면 잘 전송이 되었다는 의미의 조건문
 			return true;
-		} // 결과값이 0보다 크면 잘 전송이 되었다는 의미의 조건문
-		else {
+		} else {
 			return false;
 		}
-	}// delProduct
-
-	
+	}
 
 	public ArrayList<DayList> getTotalTable() {			
 		connectDB();
@@ -193,30 +217,64 @@ public class DAOManager {
 		return days;
 	}
 
-	public ArrayList<DayList> getStockTable() {			
-		
+	public ArrayList<DayList> getStockTable() {
+
 		ArrayList<DayList> days = new ArrayList<DayList>();
 		
-		
+		int key = getKey();
+		int cSales;
+		int cStock;
+		int cPrice;
+		String cName;
 		try {
+			//sql = "select * from chicken" + index;
 			connectDB();
-			for(int i=1;i<=getKey();i++) {
-		
+			for (int i = 1; i <= key; i++) {
 				DayList d = new DayList();
-			
-				d.setSales(getSales(i));
-				d.setStock(getStock(i));
-				d.setPrice(getPrice(i));
-				System.out.println(""+d.getStock());
-				sql = "select cname from menulist where id = ?";
-				pstmt = conn.prepareStatement(sql);
-				pstmt.setString(1, "\'chicken\'"+i);
 				
+				
+				sql = "select sales from chicken"+i+" order by day desc limit 1";				
+				pstmt = conn.prepareStatement(sql);				
 				rs=pstmt.executeQuery();
-				//rs.next();
+				if(rs.next()==true) {
+				cSales = rs.getInt("sales");
+				System.out.println(""+rs.getInt("sales"));
+				}
+				else { cSales = 0; }
 				
-				d.setName(rs.getString("cname"));
+				sql = "select stock from chicken"+i+" order by day desc limit 1";
+				pstmt = conn.prepareStatement(sql);
+				rs=pstmt.executeQuery();
+				if(rs.next()==true) {
+				cStock = rs.getInt("stock");
+				}
+				else { cStock = 0; }
+				
+				sql = "select price from chicken"+i+" order by day desc limit 1";
+				pstmt = conn.prepareStatement(sql);
+				rs=pstmt.executeQuery();
+				if(rs.next()==true) {
+				cPrice = rs.getInt("price");
+				}
+				else { cPrice = 0; }
+							
+				sql = "select cname from menulist where id = ?";	
+				pstmt = conn.prepareStatement(sql);
+				String chicken = "chicken" + i;
+				pstmt.setString(1, chicken);
+				rs = pstmt.executeQuery();
+				rs.next();
+				cName = rs.getString("cname");
+								
+				d.setSales(cSales);
+				d.setStock(cStock);
+				d.setPrice(cPrice);
+				d.setName(cName);	
+				
 				days.add(d);
+				
+				
+				
 			}
 		} catch (Exception e) {
 		}
@@ -423,6 +481,24 @@ public class DAOManager {
 		return result;
 	}
 	
+	public String getId(int index) { // 테이블의 마지막 인덱스의 판매량을 나타내준다
+		String result ="" ;
+		sql = "select id from menulist where mainkey = ?"; 
+
+		try {
+			connectDB(); // DB에 연걸
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, index);
+			rs = pstmt.executeQuery();
+			rs.next();
+			result = rs.getString("id");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		closeDB(); // DB연결을 해제한다
+		return result;
+	}
+	
 	public Vector<String> getComboIndex() {		//콤보박스의 인덱스를
 		
 		items = new Vector<String>(); 
@@ -444,6 +520,7 @@ public class DAOManager {
 	
 	public Vector<String> getItems(){return items;}
 	
+	
 	public void updatePay(ArrayList<ReceiptItem> receipt,String day) {
 		//치킨 데이터베이스로 가는거 receipt.get(1).getItemIndex();
 		//재고랑 판매량 변화 receipt.get(0).getItemAmount();
@@ -455,7 +532,42 @@ public class DAOManager {
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-	
 	}
 
+	public String getTotalDay(String str) {
+		sql = "select day from totallist where day = ?";
+		String day="";
+		try {
+			connectDB(); // DB에 연결한다.
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, str);
+			rs = pstmt.executeQuery();
+			day = rs.getString("day");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		closeDB(); // DB연결을 해제한다
+
+				
+				
+		return day;
+	}
+	public int getOneTotalPrice(String str) {
+		sql = "select totalprice from totallist where day = ?";
+		int price=0;
+		try {
+			connectDB(); // DB에 연결한다.
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, str);
+			rs = pstmt.executeQuery();
+			price = rs.getInt("totallist");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		closeDB(); // DB연결을 해제한다		
+		return price;
+	}
+	
 }
