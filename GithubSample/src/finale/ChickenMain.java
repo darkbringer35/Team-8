@@ -395,20 +395,23 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame¿ª 
 			cash=txtCash[1].getText();
 			x=Integer.parseInt(cash);
 			
-			if(x==9) {
+			if(i==9) {
 				x*=100;
 				txtCash[1].setText(""+x);	
 			}
-			else if(x==11) {
-				x=0;
+			else if(i==10) {
+				x=x*10;
 				txtCash[1].setText(""+x);
 			}
+			else if(i==11) {
+				txtCash[1].setText("0");
+			}
 			else {
-				x=x*10+i;
+				x=x*10+i+1;
 				txtCash[1].setText(""+x);
 			}
 			
-			x=Integer.parseInt(txtCash[0].getText())-x;
+			x=Integer.parseInt(txtCash[0].getText())-Integer.parseInt(txtCash[1].getText());
 			txtCash[2].setText(""+(-x));	
 		}
 	}
