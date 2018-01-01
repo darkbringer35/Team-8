@@ -1,4 +1,4 @@
-package wan;
+package fina;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -164,7 +164,7 @@ public class DAOManager {
 			rs = pstmt.executeQuery();			
 			d.setDay(rs.getString("day"));
 			d.setSales(rs.getInt("totalsales"));
-			d.setPrice(rs.getInt("totalprice"));
+			d.setStock(rs.getInt("totalprice"));
 	
 		} catch (Exception e) {
 		}
@@ -238,6 +238,7 @@ public class DAOManager {
 				rs=pstmt.executeQuery();
 				if(rs.next()==true) {
 				cSales = rs.getInt("sales");
+				System.out.println(""+rs.getInt("sales"));
 				}
 				else { cSales = 0; }
 				
@@ -542,7 +543,6 @@ public class DAOManager {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, str);
 			rs = pstmt.executeQuery();
-			rs.next();
 			day = rs.getString("day");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -562,8 +562,7 @@ public class DAOManager {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, str);
 			rs = pstmt.executeQuery();
-			rs.next();
-			price = rs.getInt("totalprice");
+			price = rs.getInt("totallist");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

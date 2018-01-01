@@ -1,4 +1,4 @@
-package wan;
+package fina;
 
 
 
@@ -25,8 +25,6 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 	
 	private JTextField[] txfCash;
 	
-	//사용될 테마 컬러들 정의
-	private Color color1 = new Color(255, 218, 175);
 	
 //=====================================================================================
 //	#생성자
@@ -53,23 +51,22 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		int menuBtnNum=4, menuWidth = 200,menuHeight = 130;
 		
 		
-		ImageIcon[] image = new ImageIcon[4];
-		for(int i = 0; i < 4; i++) {
-			image[i] = new ImageIcon("menuBtn"+i+".png");	//프로젝트 폴더에 해당되는 이미지 파일 이름으로 넣을 것
-		}
+/*이미지*/ImageIcon[] image = new ImageIcon[4];
+/*이미지*/for(int i = 0; i < 4; i++) {
+/*이미지*/	image[i] = new ImageIcon("menuBtn"+i+".png");	//프로젝트 폴더에 해당되는 이미지 파일 이름으로 넣을 것
+/*이미지*/}
 		
 		btnMenu = new JButton[menuBtnNum];
 /*이미지*/btnMenu[0] = new ItemManageBtn(image[0]);  			//버튼에 생성자 추가해서 가능함
-		btnMenu[1] = new SalesManageBtn(image[1]); 			//메뉴 버튼들에는 이미지 받는 생성자를 전부 집어 넣어놨음
-		btnMenu[2] = new TableEditBtn(image[2]); 
-		btnMenu[3] = new OptionBtn(image[3]);
+		btnMenu[1] = new SalesManageBtn("매출관리"); 			//메뉴 버튼들에는 이미지 받는 생성자를 전부 집어 넣어놨음
+		btnMenu[2] = new TableEditBtn("테이블 편집"); 
+		btnMenu[3] = new OptionBtn("환경설정");
 		
 		for(int i=0;i<menuBtnNum;i++)
 		{
 			btnMenu[i].setBounds(0, i*menuHeight, menuWidth, menuHeight);//메뉴버튼들의 위치 설정
 			btnMenu[i].addActionListener(this);
 			backgroundPanel[0].add(btnMenu[i]);
-			btnMenu[i].setBorderPainted(false); //버튼 테두리 없애기
 		}
 		
 		//-----------------------------------------------------------------------------
@@ -86,7 +83,6 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		btnTableEdit[1] = new TableDelete("-");
 		btnTableEdit[1].setBounds(750,10, 45,35);
 		for(int i=0;i<2;i++) {
-			btnTableEdit[i].setBackground(color1);
 			backgroundPanel[1].add(btnTableEdit[i]);
 			btnTableEdit[i].setVisible(false);
 			btnTableEdit[i].addActionListener(this);
@@ -113,26 +109,10 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		backgroundPanel[2].setPreferredSize(new Dimension(1000, 210));
 		backgroundPanel[2].setBackground(Color.white);
 		
-		//belowPanel[2]패널에 로고이미지 삽입
-		ImageIcon logoIcon= new ImageIcon("logo.png");
-		Image logoImg = logoIcon.getImage();
-		
 		belowPanel = new JPanel[3];
 		for(int i = 0;i<3;i++)
 		{
-			if(i==2) {
-				belowPanel[i] = new JPanel() {
-					@Override
-			    	public void paintComponent(Graphics g)
-					{
-						super.paintComponent(g);
-						g.drawImage(logoImg, 0, 0, this);
-					}
-				};
-			}
-			else {
-				belowPanel[i] = new JPanel();
-			}
+			belowPanel[i] = new JPanel();
 			backgroundPanel[2].add(belowPanel[i]);
 		}
 		
@@ -146,11 +126,9 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		int txtNum=3,  txtGap=48, txtH = 24;
 		
 		lblCash = new JLabel[txtNum];
-		ImageIcon[] image4 = new ImageIcon[3];
-		for(int i = 0; i < 3; i++) {
-			image4[i] = new ImageIcon("panel"+i+".png");	//프로젝트 폴더에 해당되는 이미지 파일 이름으로 넣을 것
-			lblCash[i] = new JLabel(image4[i]);
-		}
+		lblCash[0] = new JLabel("결제 금액");
+		lblCash[1] = new JLabel("받은 금액");
+		lblCash[2] = new JLabel("잔       돈");
 		txfCash = new JTextField[txtNum];
 		
 		for(int i =0;i<txtNum;i++) {
@@ -162,42 +140,33 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 			belowPanel[0].add(txfCash[i]);
 		}
 		
-		ImageIcon[] image2 = new ImageIcon[2];
-		for(int i = 0; i < 2; i++) {
-			image2[i] = new ImageIcon("payBtn"+i+".png");
-		}
-		
 		btnCash=new CashBtn[2];
-		btnCash[0] = new CashBtn(image2[0]);
+		btnCash[0] = new CashBtn("카드결제");
 		btnCash[0].setBounds(25,168, 125, 24);
 		
-		btnCash[1] = new CashBtn(image2[1]);
+		btnCash[1] = new CashBtn("현금결제");
 		btnCash[1].setBounds(200,168,125,24);
 		
 		for(int i=0;i<2;i++) {
 			belowPanel[0].add(btnCash[i]);
 			btnCash[i].addActionListener(this);
-			btnCash[i].setBorderPainted(false); //버튼 테두리 없애기
 		}
 	
 		
 		//-----------------------------------------------------------------------------
 		//	#하부 패널2 숫자판 패널 설정
 		//----------------------------------------------------------------------------
-		ImageIcon[] image3 = new ImageIcon[12];
-		for(int i = 0; i < 12; i++) {
-			image3[i] = new ImageIcon("padBtn"+i+".png");	//프로젝트 폴더에 해당되는 이미지 파일 이름으로 넣을 것
-		}
-		
 		belowPanel[1].setBounds(375,0,375,210);
 		belowPanel[1].setBackground(Color.white);
 		belowPanel[1].setLayout(new GridLayout(4,3));
 		pad= new NumPadBtn[12];
 		for(int i=0; i<12; i++) {	//pad[i].setSize(125, 40);
-			pad[i] = new NumPadBtn(image3[i], i);
+			if(i==9) { pad[i] = new NumPadBtn("00");}
+			else if(i==10) { pad[i] = new NumPadBtn("0");}
+			else if(i==11) { pad[i] = new NumPadBtn("C");}
+			else { pad[i] = new NumPadBtn(""+(i+1));}
 			belowPanel[1].add(pad[i]);
 			pad[i].addActionListener(this);
-			pad[i].setBorderPainted(false); //버튼 테두리 없애기
 		}
 		
 		//-----------------------------------------------------------------------------
@@ -376,34 +345,31 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		}
 	}
 	public class NumPadBtn extends JButton implements EventAction{
-		int i;
+		String title;
 		int x;
 		String cash;
-		
 		JTextField[] txtCash;
 		
-		
-		public NumPadBtn(ImageIcon icon, int index) {
-			this.setIcon(icon);
-			i= index;
+		public NumPadBtn(String s) {
+			title = s;
+			this.setText(title);
 			txtCash=AppManager.getInstance().getChickenMain().getTxfCash();
 		}
-		
 		@Override
 		public void doAction() {
 			cash=txtCash[1].getText();
 			x=Integer.parseInt(cash);
 			
-			if(x==9) {
+			if(title.equals("00")) {
 				x*=100;
 				txtCash[1].setText(""+x);	
 			}
-			else if(x==11) {
+			else if(title.equals("C")) {
 				x=0;
 				txtCash[1].setText(""+x);
 			}
 			else {
-				x=x*10+i;
+				x=x*10+Integer.parseInt(title);
 				txtCash[1].setText(""+x);
 			}
 			
@@ -412,22 +378,19 @@ public class ChickenMain extends JFrame implements ActionListener {	// JFrame을 
 		}
 	}
 	public class CashBtn extends JButton implements EventAction{
-		public CashBtn(ImageIcon icon) {
-			this.setIcon(icon);
+		public CashBtn (String s){
+			this.setText(s);
 		}
 		@Override
 		public void doAction() {
 			JTextField[] txtCash=AppManager.getInstance().getChickenMain().getTxfCash();
-			if(Integer.parseInt(txtCash[0].getText())!=0) {
-				TableBtn tb = table.get(AppManager.getInstance().getTid());
-				AppManager.getInstance().getDAOManger().updatePay(tb.getTInfo(), AppManager.getInstance().getChickenDialog().getToday());
-				tb.setBoxNum(0);
-				tb.setPrice(0);
-				tb.setTInfo(null);
-				tb.timerOff();
-				for(int i = 0; i<3;i++)
-					txtCash[i].setText("0");
-			}
+			//if(txtCash[])
+			TableBtn tb = table.get(AppManager.getInstance().getTid());
+			AppManager.getInstance().getDAOManger().updatePay(tb.getTInfo(), AppManager.getInstance().getChickenDialog().getToday());
+			tb.setBoxNum(0);
+			tb.setPrice(0);
+			tb.setTInfo(null);
+			tb.timerOff();
 		}
 		
 	}

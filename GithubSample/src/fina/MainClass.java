@@ -1,4 +1,4 @@
-package wan;
+package fina;
 
 
 public class MainClass {
