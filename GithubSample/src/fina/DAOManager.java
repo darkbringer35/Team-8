@@ -30,7 +30,7 @@ public class DAOManager {
 		try {
 
 			Class.forName(jdbcDriver); // jdbc드라이버 로딩
-			conn = DriverManager.getConnection(jdbcUrl, "javabook", "0305"); // DB경로, 사용자id,p/w를 통하여 연결하는 변수 생성
+			conn = DriverManager.getConnection(jdbcUrl, "root", "0305"); // DB경로, 사용자id,p/w를 통하여 연결하는 변수 생성
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -144,7 +144,7 @@ public class DAOManager {
 				DayList d = new DayList();
 				d.setDay(rs.getString("day"));
 				d.setSales(rs.getInt("totalsales"));
-				d.setStock(rs.getInt("totalprice"));
+				d.setPrice(rs.getInt("totalprice"));
 				days.add(d);
 			}
 		} catch (Exception e) {
@@ -161,10 +161,12 @@ public class DAOManager {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, day);
 			
-			rs = pstmt.executeQuery();			
-			d.setDay(rs.getString("day"));
-			d.setSales(rs.getInt("totalsales"));
-			d.setStock(rs.getInt("totalprice"));
+			rs = pstmt.executeQuery();		
+			if(rs.next()) {
+				d.setDay(rs.getString("day"));
+				d.setSales(rs.getInt("totalsales"));
+				d.setPrice(rs.getInt("totalprice"));
+			}
 	
 		} catch (Exception e) {
 		}
@@ -174,7 +176,7 @@ public class DAOManager {
 	
 	public DayList getOneDay(int index, String day) {
 		connectDB();
-		// ArrayList<DayList> days= new ArrayList<DayList>();
+
 		sql = "select * from chicken" + index + "where day = ?";
 		DayList d = new DayList();
 
@@ -238,7 +240,6 @@ public class DAOManager {
 				rs=pstmt.executeQuery();
 				if(rs.next()==true) {
 				cSales = rs.getInt("sales");
-				System.out.println(""+rs.getInt("sales"));
 				}
 				else { cSales = 0; }
 				
@@ -295,11 +296,12 @@ public class DAOManager {
 			boolean flag = rs.next();
 
 			if (flag == false) {
+				
 				sql = "insert into chicken" + index + "(day,sales,stock,price) values(?,?,?,?)";
 				pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, day);
 				pstmt.setInt(2, sales);
-				pstmt.setInt(3, stock);
+				pstmt.setInt(3, stock-sales);
 				pstmt.setInt(4, price);
 				result = pstmt.executeUpdate();
 			}
@@ -402,8 +404,9 @@ public class DAOManager {
 			connectDB(); // DB에 연걸
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
-			rs.next();
+			if(rs.next()) {
 			result = rs.getInt("mainkey");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -419,8 +422,9 @@ public class DAOManager {
 			connectDB(); // DB에 연걸
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
-			rs.next();
+			if(rs.next()) {
 			result = rs.getInt("sales");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -436,8 +440,9 @@ public class DAOManager {
 			connectDB(); // DB에 연걸
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
-			rs.next();
+			if(rs.next()) {
 			result = rs.getInt("stock");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -453,8 +458,9 @@ public class DAOManager {
 			connectDB(); // DB에 연걸
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
-			rs.next();
+			if(rs.next()) {
 			result = rs.getInt("price");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -472,8 +478,9 @@ public class DAOManager {
 			String chicken = "chicken"+index;
 			pstmt.setString(1, chicken);
 			rs = pstmt.executeQuery();
-			rs.next();
+			if(rs.next()) {
 			result = rs.getString("cname");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -481,7 +488,7 @@ public class DAOManager {
 		return result;
 	}
 	
-	public String getId(int index) { // 테이블의 마지막 인덱스의 판매량을 나타내준다
+	public String getId(int index) { 
 		String result ="" ;
 		sql = "select id from menulist where mainkey = ?"; 
 
@@ -490,8 +497,9 @@ public class DAOManager {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, index);
 			rs = pstmt.executeQuery();
-			rs.next();
+			if(rs.next()) {
 			result = rs.getString("id");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -526,7 +534,9 @@ public class DAOManager {
 		//재고랑 판매량 변화 receipt.get(0).getItemAmount();
 		try {
 			for(ReceiptItem ri : receipt) {
-				insertList(ri.getItemIndex(), day, ri.getItemAmount(), 100, getPrice(ri.getItemIndex()));
+
+					insertList(ri.getItemIndex(), day, ri.getItemAmount(), getStock(ri.getItemIndex()), getPrice(ri.getItemIndex()));
+
 			}
 			
 		}catch(Exception e) {
@@ -539,11 +549,12 @@ public class DAOManager {
 		String day="";
 		try {
 			connectDB(); // DB에 연결한다.
-
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, str);
 			rs = pstmt.executeQuery();
+			if(rs.next()) {
 			day = rs.getString("day");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -553,6 +564,7 @@ public class DAOManager {
 				
 		return day;
 	}
+	
 	public int getOneTotalPrice(String str) {
 		sql = "select totalprice from totallist where day = ?";
 		int price=0;
@@ -562,7 +574,9 @@ public class DAOManager {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, str);
 			rs = pstmt.executeQuery();
-			price = rs.getInt("totallist");
+			if(rs.next()) {
+			price = rs.getInt("totalprice");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -1,8 +1,6 @@
 package fina;
 
 
-
-
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -21,6 +19,9 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 	private boolean timerOn = false;
 	private boolean blackRed = false;
 	
+	//사용될 테마 컬러들 정의
+	private Color color3 = new Color(255, 218, 175);
+	
 //=====================================================================================
 //	#생성자
 //=====================================================================================	
@@ -33,6 +34,7 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 		
 		this.updateUI();
 		
+		this.setBackground(color3);
 		this.setVisible(true);
 		this.setSize(100,100);
 		this.setLocation(100+index*10,100+index*10);
@@ -103,6 +105,7 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 		}
 	}
 	public void timerOff() {
+		AppManager.getInstance().getChickenServer().msgType(5);
 		timerOn=false;
 		if(timer!=null) timer.stop();
 		timer=null;
@@ -115,6 +118,9 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 	public void doAction() {
 		AppManager.getInstance().setTid(index);
 		AppManager.getInstance().getChickenDialog().setMode(4);
+		for(int i=0;i < 3;i++) {
+			AppManager.getInstance().getChickenMain().getTxfCash()[i].setText("0");
+		}
 		AppManager.getInstance().getChickenMain().allTableClean();
 		this.setForeground(Color.RED);
 		this.setBorderPainted(true);
@@ -167,7 +173,9 @@ public class TableBtn extends JButton implements EventAction, MouseListener, Mou
 				txf[2].setText(""+(Integer.parseInt(txf[1].getText())-price));
 			}
 			this.setLocation(backX,backY);
-			AppManager.getInstance().getChickenMain().getTabelPanel().repaint();
+			AppManager.getInstance().setTid(index);
+			AppManager.getInstance().getChickenMain().allTableClean();
+			//AppManager.getInstance().getChickenMain().getTabelPanel().repaint();
 		}
 		else if(AppManager.getInstance().getFrameMode()==1) {
 			if(this.getX()<0||this.getX()>708||this.getY()<0||this.getY()>409)

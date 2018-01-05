@@ -1,8 +1,6 @@
 package fina;
 
 
-
-
 public class ReceiptItem {
 	int itemIndex;
 	int itemAmount;

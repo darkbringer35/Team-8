@@ -1,7 +1,5 @@
 package fina;
 
-
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,32 +9,20 @@ import java.util.Vector;
 
 
 public class TableDao {
-	private static TableDao tableDao;
 	String jdbcDriver = "com.mysql.jdbc.Driver"; // jdbc드라이버의 경로 저장
 	Connection conn; // DB와 연결할 변수 선언
 	PreparedStatement pstmt; // 쿼리를 날리기전 미리 컴파일 하여 날리는 변수 선언
 	ResultSet rs; // DB의 결과값을 저장할 변수 선언
 	String jdbcUrl = "jdbc:mysql://localhost/chicken"; // DB의 경로를 저장할 변수 선언
 	String sql; // DB의 명령문을 저장할 변수 선언
-	int lastIndex = 0; // 메뉴리스트 테이블이 갖고있는 마지막 인덱스 변수
 	Vector<String> items = null;
 	Vector<TableBtn> tables = null;
 
 	
 	public TableDao() {
 		AppManager.getInstance().setTableDao(this);
-		tables= new Vector<TableBtn>();
 	}
 
-	public static TableDao getInstance() {
-		if (tableDao == null)
-			tableDao = new TableDao();
-		return tableDao;
-	}
-
-	public TableDao getTableDao() {return tableDao;}
-	public void setTableDao(TableDao dao) {this.tableDao = dao;}
-	
 	public void connectDB() { // DB를 연결할 함수 선언
 		try {
 
@@ -57,18 +43,17 @@ public class TableDao {
 		}
 	}// closeDB
 	
-	
 	public Vector<TableBtn> getTableList(){
 		connectDB();
+		tables= new Vector<TableBtn>();
 		sql = "select * from tablelist";
+		
 		try {
 			pstmt = conn.prepareStatement(sql);
 			rs = pstmt.executeQuery();
 			while (rs.next()) {
 				int id = rs.getInt("tindex");
 				TableBtn t = new TableBtn(id);
-				System.out.println(t.getX()+" "+ t.getY());
-				
 				t.setLocation(rs.getInt("getx"),rs.getInt("gety"));
 				tables.add(t);	
 			}
@@ -138,6 +123,5 @@ public class TableDao {
 		closeDB(); // DB연결을 해제한다
 		return result;
 	}
-	
 	
 }

@@ -1,7 +1,5 @@
 package fina;
 
-
-
 import java.util.*;
 
 public class AppManager {
@@ -15,6 +13,7 @@ public class AppManager {
 	private boolean mouseOut;
 	private DAOManager dao;
 	private TableDao tDao;
+	private ChickenServer cServer;
 	
 	private AppManager() {
 		frameMode=0;
@@ -80,6 +79,10 @@ public class AppManager {
 	public void setTableDao(TableDao tDao) {
 		this.tDao = tDao;
 	}
-	
-	
+	public ChickenServer getChickenServer() {
+		return cServer;
+	}
+	public void setChickenServer(ChickenServer server) {
+		cServer=server;
+	}
 }

@@ -1,6 +1,5 @@
 package fina;
 
-
 public class MainClass {
 
 	public static void main(String[] args) {
@@ -9,6 +8,7 @@ public class MainClass {
 		TableDao tDao = new TableDao();
 		ChickenDialog cDia = new ChickenDialog();
 		ChickenMain cFrame = new ChickenMain();
+		ChickenServer cServer = new ChickenServer();
 		
 	}
 

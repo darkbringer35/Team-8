@@ -1,8 +1,5 @@
 package fina;
 
-
-
-
 public class DayList {
 	
 	String day;
